@@ -2,8 +2,10 @@ package main
 
 import (
 	"fmt"
-	httpApi "github.com/JeyKeyAlex/TourProject/internal/transport/http"
 	"net/http"
+
+	"github.com/JeyKeyAlex/TourProject/internal/database"
+	httpApi "github.com/JeyKeyAlex/TourProject/internal/transport/http"
 )
 
 func main() {
@@ -11,6 +13,8 @@ func main() {
 	// TODO init logger
 	// TODO init runtime
 	// TODO init database
+
+	// Create DB pool
 	db, err := DBinit("postgres://postgres:9512357@localhost:5432/test?sslmode=disable")
 	if err != nil {
 		panic(err)
@@ -19,11 +23,14 @@ func main() {
 	}
 	defer db.Close()
 
+	// NewDBP creates a new database instance
+	dbInstance := database.NewDBP(db)
+
 	// TODO init service
 	// TODO init client (grpc, http, smtp,...)
 	chiRouter := initRouter()
-	httpApi.InitApi(chiRouter)
-	fmt.Println("starting server on port 8080")
+	httpApi.InitApi(chiRouter, dbInstance)
+	fmt.Println("starting server on port 8080") // убрать в init
 	err = http.ListenAndServe(":8080", chiRouter)
 	if err != nil {
 		panic(err)

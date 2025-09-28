@@ -5,8 +5,13 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-type dbp struct {
+type DBP struct {
 	db *pgxpool.Pool
+}
+
+// NewDBP creates a new database instance
+func NewDBP(pool *pgxpool.Pool) *DBP {
+	return &DBP{db: pool}
 }
 
 type RWDBOperationer interface {

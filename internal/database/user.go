@@ -8,7 +8,7 @@ import (
 	"github.com/JeyKeyAlex/TourProject/internal/entities"
 )
 
-func (db *dbp) GetUserList() ([]entities.User, error) {
+func (db *DBP) GetUserList() ([]entities.User, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
