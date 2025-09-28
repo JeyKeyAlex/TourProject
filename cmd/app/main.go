@@ -15,7 +15,7 @@ func main() {
 	// TODO init database
 
 	// Create DB pool
-	db, err := DBinit("postgres://postgres:9512357@localhost:5432/test?sslmode=disable")
+	db, err := DBinit("postgres://postgres:9512357@localhost:5432/test?sslmode=disable") // убрать в конфиги
 	if err != nil {
 		panic(err)
 	} else {
@@ -30,8 +30,8 @@ func main() {
 	// TODO init client (grpc, http, smtp,...)
 	chiRouter := initRouter()
 	httpApi.InitApi(chiRouter, dbInstance)
-	fmt.Println("starting server on port 8080") // убрать в init
-	err = http.ListenAndServe(":8080", chiRouter)
+	fmt.Println("starting server on port 8080")   // убрать в init
+	err = http.ListenAndServe(":8080", chiRouter) // убрать в конфиги
 	if err != nil {
 		panic(err)
 	}
