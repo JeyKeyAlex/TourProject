@@ -14,7 +14,7 @@ type dbp struct {
 
 type RWDBOperation dbp
 
-// NewDBP creates a new database instance
-func NewDBP(pool *pgxpool.Pool) *RWDBOperation {
+// NewRWDBOperationer creates a new database instance
+func NewRWDBOperationer(pool *pgxpool.Pool) *RWDBOperation {
 	return &RWDBOperation{db: pool}
 }
