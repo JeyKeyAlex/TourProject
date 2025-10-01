@@ -1,16 +1,18 @@
 package user
 
 import (
-	"github.com/JeyKeyAlex/TourProject/internal/entities"
+	"context"
 	"net/http"
 
-	"github.com/JeyKeyAlex/TourProject/internal/database"
 	"github.com/JeyKeyAlex/TourProject/internal/endpoint"
+	"github.com/JeyKeyAlex/TourProject/internal/entities"
+	userSrv "github.com/JeyKeyAlex/TourProject/internal/service/user"
 )
 
-func GetUserListHandler(s database.RWDBOperationer) http.HandlerFunc {
+func GetUserListHandler(s userSrv.IService) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		userList, err := s.GetUserList()
+		ctx := context.Background()
+		userList, err := s.GetUserList(ctx)
 		if err != nil {
 			endpoint.WriteJSON(w, http.StatusBadRequest, err)
 			return
