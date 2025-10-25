@@ -2,7 +2,8 @@ package main
 
 import (
 	"context"
-	"fmt"
+	"github.com/JeyKeyAlex/TourProject/internal/config"
+	"github.com/rs/zerolog"
 	"net"
 	"net/http"
 	"time"
@@ -64,23 +65,26 @@ func initHTTPRouter() *chi.Mux {
 	return r
 }
 
-func initKitHTTP(endpoints endpoint.ServiceEndpoints, router *chi.Mux, listenErr chan error) (*http.Server, net.Listener) {
+func initKitHTTP(endpoints endpoint.ServiceEndpoints, router *chi.Mux, listenErr chan error, cfg *config.Config, netLogger zerolog.Logger) (*http.Server, net.Listener) {
 	var serverOptions []kithttp.ServerOption
 	router.Mount("/UserService/", tpHTTPUser.NewServer(endpoints.UserEP, serverOptions))
 
 	httpServer := &http.Server{
-		Handler:   router,
-		TLSConfig: nil,
+		Handler:      router,
+		TLSConfig:    nil,
+		ReadTimeout:  cfg.HTTP.ReadTimeout,
+		WriteTimeout: cfg.HTTP.WriteTimeout,
+		IdleTimeout:  cfg.HTTP.IdleTimeout,
 	}
 
-	l, err := net.Listen("tcp", ":8080")
+	l, err := net.Listen(cfg.HTTP.Network, cfg.HTTP.Address)
 	if err != nil {
-		fmt.Println("failed to init net.Listen for http")
+		netLogger.Fatal().Err(err).Msg("failed to init net.Listen for http")
 	} else {
-		fmt.Println("successful net.Listen for http init")
+		netLogger.Info().Msg("successful net.Listen for http init")
 	}
 
-	go tpHTTP.RunHTTPServer(httpServer, l, listenErr)
+	go tpHTTP.RunHTTPServer(httpServer, l, listenErr, netLogger)
 	time.Sleep(10 * time.Millisecond)
 
 	return httpServer, l
