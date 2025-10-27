@@ -2,8 +2,6 @@ package main
 
 import (
 	"context"
-	"github.com/JeyKeyAlex/TourProject/internal/config"
-	"github.com/JeyKeyAlex/TourProject/pkg/logger"
 	"io"
 	"log"
 	"net/http"
@@ -11,6 +9,9 @@ import (
 	"os/signal"
 	"syscall"
 	"time"
+
+	"github.com/JeyKeyAlex/TourProject/internal/config"
+	"github.com/JeyKeyAlex/TourProject/pkg/logger"
 
 	"github.com/JeyKeyAlex/TourProject/internal/database"
 	"github.com/rs/zerolog"
@@ -64,7 +65,15 @@ func main() {
 
 	/* ------------------  logger initialized  ----------------------- */
 
-	// TODO init runtime
+	/* ------------------  runtime initialization  ------------------ */
+
+	// TODO: RuntimeConfig is not being used yet
+	// To use all available CPUs and threads by default in Go:
+	// - When UseCPUs = 0, Go runtime uses all available CPU cores (GOMAXPROCS = numCPU)
+	// - When MaxThreads = 0 (not applicable in Go - Go manages threads automatically)
+	// Currently, with default values, Go WILL use all CPU cores and available resources
+
+	/* ------------------  runtime initialized  -------------------- */
 
 	/* ------------------  database initialization  ------------------ */
 
