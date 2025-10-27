@@ -8,11 +8,11 @@ import (
 	"github.com/JeyKeyAlex/TourProject/internal/entities"
 )
 
-func (db *RWDBOperation) GetUserList() ([]entities.User, error) {
+func (db *RWDBOperation) GetUserList() (*entities.GetUserListResponse, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	rows, err := db.db.Query(ctx, "SELECT * FROM people.data")
+	rows, err := db.db.Query(ctx, "SELECT id, email FROM users.list")
 	if err != nil {
 		err = errors.New("failed to db.GetUserList: " + err.Error())
 		return nil, err
@@ -35,5 +35,12 @@ func (db *RWDBOperation) GetUserList() ([]entities.User, error) {
 		return nil, err
 	}
 
-	return users, nil
+	count := int64(len(users))
+
+	resp := &entities.GetUserListResponse{
+		Count: count,
+		Users: users,
+	}
+
+	return resp, nil
 }

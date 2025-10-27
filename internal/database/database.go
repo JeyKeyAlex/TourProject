@@ -6,7 +6,7 @@ import (
 )
 
 type RWDBOperationer interface {
-	GetUserList() ([]entities.User, error)
+	GetUserList() (*entities.GetUserListResponse, error)
 }
 type dbp struct {
 	db *pgxpool.Pool

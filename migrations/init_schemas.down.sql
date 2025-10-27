@@ -1,0 +1,6 @@
+BEGIN;
+
+DROP TABLE IF EXISTS users.list;
+DROP SCHEMA IF EXISTS users;
+
+COMMIT;

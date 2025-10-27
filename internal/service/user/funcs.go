@@ -5,7 +5,7 @@ import (
 	"github.com/JeyKeyAlex/TourProject/internal/entities"
 )
 
-func (s *Service) GetUserList(ctx context.Context) ([]entities.User, error) {
+func (s *Service) GetUserList(ctx context.Context) (*entities.GetUserListResponse, error) {
 	list, err := s.rwdbOperation.GetUserList()
 	if err != nil {
 		return nil, err

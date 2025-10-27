@@ -7,7 +7,7 @@ import (
 )
 
 type IService interface {
-	GetUserList(ctx context.Context) ([]entities.User, error)
+	GetUserList(ctx context.Context) (*entities.GetUserListResponse, error)
 }
 type Service struct {
 	rwdbOperation database.RWDBOperationer
