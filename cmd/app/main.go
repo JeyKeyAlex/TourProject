@@ -17,14 +17,18 @@ import (
 )
 
 func main() {
-	// TODO init config
+	/* ------------------  config initialization  ------------------ */
 	appConfig, err := config.NewConfig()
 	if err != nil {
 		log.Fatal(err)
 	}
+	/* ------------------  config initialized  --------------------- */
+
 	// TODO init profiler
 	// TODO init logger
-	// loggers
+
+	/* ------------------  logger initialization  ------------------ */
+
 	var baseLogger zerolog.Logger
 	var loggerCloser io.WriteCloser
 	if appConfig.Log.Batch {
@@ -58,9 +62,11 @@ func main() {
 
 	coreLogger.Info().Msg("system initialization started")
 
+	/* ------------------  logger initialized  ----------------------- */
+
 	// TODO init runtime
 
-	// ---------  database initialization  ---------
+	/* ------------------  database initialization  ------------------ */
 
 	// 1. Create DB pool
 
@@ -76,24 +82,19 @@ func main() {
 
 	RWDBOperationer := database.NewRWDBOperationer(db)
 
-	// ---------  database initialized ---------
+	/* ------------------  database initialized  --------------------- */
 
-	// ---------  service initialization  ---------
+	/* ------------------  service initialization  ------------------- */
 
 	serviceEndpoints := initEndpoints(RWDBOperationer)
 
-	// ---------  service initialized  ---------
+	/* ------------------  service initialized  ---------------------- */
 
 	// TODO init client (grpc, http, smtp,...)
 	// TODO init messenger broker (Kafka, Rabbit, Nats)
 
-	// ---------  server initialization  ---------
-	//httpApi.InitApi(chiRouter, srv)
-	//fmt.Println("starting server on port 8080")   // убрать в init
-	//err = http.ListenAndServe(":8080", chiRouter) // убрать в конфиги
-	//if err != nil {
-	//	panic(err)
-	//}
+	/* ------------------  server initialization  -------------------- */
+
 	chiRouter := initHTTPRouter()
 	// TODO healthChecker
 
@@ -108,7 +109,8 @@ func main() {
 		}
 	}()
 
-	// ---------  server initialized  ---------
+	/* ------------------  server initialized  ----------------------- */
+
 	runApp(httpServer, listenErr, coreLogger)
 }
 
