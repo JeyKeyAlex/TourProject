@@ -11,7 +11,7 @@ import (
 	"github.com/sethvargo/go-envconfig"
 )
 
-func NewConfig() (*Config, error) {
+func NewConfig() (*Configuration, error) {
 	var envFiles []string
 	if _, err := os.Stat(".env"); err == nil {
 		log.Println("found .env file, adding it to env config files list")
@@ -25,7 +25,7 @@ func NewConfig() (*Config, error) {
 		}
 	}
 
-	cfg := &Config{}
+	cfg := &Configuration{}
 	ctx := context.Background()
 
 	err := envconfig.Process(ctx, cfg)
@@ -36,7 +36,7 @@ func NewConfig() (*Config, error) {
 }
 
 type (
-	Config struct {
+	Configuration struct {
 		Version  VersionConfig  `env:",prefix=VERSION_"`
 		Log      LogConfig      `env:",prefix=LOG_"`
 		RunTime  RuntimeConfig  `env:",prefix=RUNTIME_"`

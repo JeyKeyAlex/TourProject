@@ -65,7 +65,7 @@ func initHTTPRouter() *chi.Mux {
 	return r
 }
 
-func initKitHTTP(endpoints endpoint.ServiceEndpoints, router *chi.Mux, listenErr chan error, cfg *config.Config, netLogger zerolog.Logger) (*http.Server, net.Listener) {
+func initKitHTTP(endpoints endpoint.ServiceEndpoints, router *chi.Mux, listenErr chan error, cfg *config.Configuration, netLogger zerolog.Logger) (*http.Server, net.Listener) {
 	var serverOptions []kithttp.ServerOption
 	router.Mount("/UserService/", tpHTTPUser.NewServer(endpoints.UserEP, serverOptions))
 
