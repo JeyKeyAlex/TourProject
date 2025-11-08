@@ -38,8 +38,9 @@ func DBinit(connectionString string) (*pgxpool.Pool, error) {
 
 func initEndpoints(
 	rwdbOperationer database.RWDBOperationer,
+	logger *zerolog.Logger,
 ) endpoint.ServiceEndpoints {
-	userSrv := srvUser.NewService(rwdbOperationer)
+	userSrv := srvUser.NewService(rwdbOperationer, logger)
 	return endpoint.ServiceEndpoints{
 		UserEP: userEp.MakeEndpoints(userSrv),
 	}

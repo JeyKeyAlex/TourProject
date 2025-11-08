@@ -26,7 +26,6 @@ func main() {
 	/* ------------------  config initialized  --------------------- */
 
 	// TODO init profiler
-	// TODO init logger
 
 	/* ------------------  logger initialization  ------------------ */
 
@@ -95,7 +94,7 @@ func main() {
 
 	/* ------------------  service initialization  ------------------- */
 
-	serviceEndpoints := initEndpoints(RWDBOperationer)
+	serviceEndpoints := initEndpoints(RWDBOperationer, &netLogger)
 
 	/* ------------------  service initialized  ---------------------- */
 
