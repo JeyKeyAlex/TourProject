@@ -7,10 +7,12 @@ import (
 
 type Endpoints struct {
 	GetUserList endpoint.Endpoint
+	CreateUser  endpoint.Endpoint
 }
 
 func MakeEndpoints(s user.IService) Endpoints {
 	return Endpoints{
 		GetUserList: makeGetUserList(s),
+		CreateUser:  CreateUser(s),
 	}
 }

@@ -6,6 +6,8 @@ import (
 	"github.com/rs/zerolog"
 	"net"
 	"net/http"
+	"runtime"
+	"runtime/debug"
 	"time"
 
 	"github.com/go-chi/chi/v5"
@@ -21,6 +23,22 @@ import (
 	custumMiddlware "github.com/JeyKeyAlex/TourProject/internal/transport/http/middleware"
 	tpHTTPUser "github.com/JeyKeyAlex/TourProject/internal/transport/http/user"
 )
+
+func initRuntime(useCPUs, maxThreads int, logger *zerolog.Logger) {
+	if useCPUs == 0 {
+		useCPUs = runtime.NumCPU()
+		runtime.GOMAXPROCS(useCPUs)
+	} else {
+		runtime.GOMAXPROCS(useCPUs)
+	}
+	logger.Info().Msgf("num of CPUs: %d", useCPUs)
+
+	if maxThreads == 0 {
+		maxThreads = 10000
+	}
+	debug.SetMaxThreads(maxThreads)
+	logger.Info().Msgf("max threads: %d", maxThreads)
+}
 
 func DBinit(connectionString string) (*pgxpool.Pool, error) {
 	pool, err := pgxpool.New(context.Background(), connectionString)
@@ -39,8 +57,9 @@ func DBinit(connectionString string) (*pgxpool.Pool, error) {
 func initEndpoints(
 	rwdbOperationer database.RWDBOperationer,
 	logger *zerolog.Logger,
+	appConfig *config.Configuration,
 ) endpoint.ServiceEndpoints {
-	userSrv := srvUser.NewService(rwdbOperationer, logger)
+	userSrv := srvUser.NewService(rwdbOperationer, logger, appConfig)
 	return endpoint.ServiceEndpoints{
 		UserEP: userEp.MakeEndpoints(userSrv),
 	}

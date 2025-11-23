@@ -10,6 +10,7 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/rs/zerolog v1.34.0
 	github.com/sethvargo/go-envconfig v1.3.0
+	github.com/valyala/bytebufferpool v1.0.0
 	google.golang.org/grpc v1.40.0
 )
 

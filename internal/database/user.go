@@ -3,18 +3,18 @@ package database
 import (
 	"context"
 	"errors"
-	"time"
-
 	"github.com/JeyKeyAlex/TourProject/internal/entities"
+	"github.com/rs/zerolog"
 )
 
-func (db *RWDBOperation) GetUserList() (*entities.GetUserListResponse, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+func (db *RWDBOperation) GetUserList(ctx context.Context, logger zerolog.Logger) (*entities.GetUserListResponse, error) {
+	timeout, cancel := context.WithTimeout(ctx, db.config.MaxIdleConnectionTimeout)
 	defer cancel()
 
-	rows, err := db.db.Query(ctx, "SELECT id, email FROM users.list")
+	rows, err := db.db.Query(timeout, queryGetUserList)
 	if err != nil {
 		err = errors.New("failed to db.GetUserList: " + err.Error())
+		logger.Error().Err(err).Msg("failed to GetUserList")
 		return nil, err
 	}
 	defer rows.Close()
@@ -26,12 +26,14 @@ func (db *RWDBOperation) GetUserList() (*entities.GetUserListResponse, error) {
 		err = rows.Scan(&user.Id, &user.Email)
 		if err != nil {
 			err = errors.New("failed to scan in db.GetUserList: " + err.Error())
+			logger.Error().Err(err).Msg("failed to GetUserList")
 			return nil, err
 		}
 		users = append(users, user)
 	}
 	if err = rows.Err(); err != nil {
 		err = errors.New("failed during rows iteration: " + err.Error())
+		logger.Error().Err(err).Msg("failed to GetUserList")
 		return nil, err
 	}
 
@@ -43,4 +45,20 @@ func (db *RWDBOperation) GetUserList() (*entities.GetUserListResponse, error) {
 	}
 
 	return resp, nil
+}
+
+func (db *RWDBOperation) CreateUser(ctx context.Context, logger zerolog.Logger, req *entities.CreateUserRequest) (*int64, error) {
+	timeout, cancel := context.WithTimeout(ctx, db.config.MaxIdleConnectionTimeout)
+	defer cancel()
+
+	var id int64
+
+	err := db.db.QueryRow(timeout, queryCreateUser, req.Email).Scan(&id)
+	if err != nil {
+		err = errors.New("failed to scan in CreateUser: " + err.Error())
+		logger.Error().Err(err).Msg("failed to CreateUser")
+		return nil, err
+	}
+
+	return &id, nil
 }
