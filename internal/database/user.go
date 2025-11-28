@@ -23,7 +23,16 @@ func (db *RWDBOperation) GetUserList(ctx context.Context, logger zerolog.Logger)
 
 	for rows.Next() {
 		var user entities.User
-		err = rows.Scan(&user.Id, &user.Email)
+		err = rows.Scan(
+			&user.Id,
+			&user.Name,
+			&user.LastName,
+			&user.MiddleName,
+			&user.Nickname,
+			&user.Email,
+			&user.PhoneNumber,
+			&user.CreatedAt,
+		)
 		if err != nil {
 			err = errors.New("failed to scan in db.GetUserList: " + err.Error())
 			logger.Error().Err(err).Msg("failed to GetUserList")
