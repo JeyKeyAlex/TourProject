@@ -4,7 +4,12 @@ CREATE SCHEMA IF NOT EXISTS users;
 
 CREATE TABLE IF NOT EXISTS users.list (
     id SERIAL NOT NULL,
+    name VARCHAR NOT NULL,
+    last_name VARCHAR NOT NULL,
+    middle_name VARCHAR DEFAULT NULL,
+    nickname VARCHAR DEFAULT NULL,
     email VARCHAR UNIQUE NOT NULL,
+    phone_number VARCHAR DEFAULT NULL,
     created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
 );
 

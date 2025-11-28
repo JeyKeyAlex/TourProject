@@ -7,11 +7,21 @@ type GetUserListResponse struct {
 	Users []User `json:"users"`
 }
 type User struct {
-	Id        int       `db:"id" json:"id,omitempty"`
-	Email     string    `db:"email" json:"email,omitempty"`
-	CreatedAt time.Time `db:"created_at" json:"created_at,omitempty"`
+	Id          int       `db:"id" json:"id,omitempty"`
+	Name        string    `db:"name" json:"name,omitempty"`
+	LastName    string    `db:"last_name" json:"last_name,omitempty"`
+	MiddleName  *string   `db:"middle_name" json:"middle_name,omitempty"`
+	Nickname    *string   `db:"nickname" json:"nickname,omitempty"`
+	Email       string    `db:"email" json:"email,omitempty"`
+	PhoneNumber *string   `db:"phone_number" json:"phone_number,omitempty"`
+	CreatedAt   time.Time `db:"created_at" json:"created_at,omitempty"`
 }
 
 type CreateUserRequest struct {
-	Email string `db:"email" json:"email,omitempty"`
+	Name        string  `db:"name" json:"name,omitempty"`
+	LastName    string  `db:"last_name" json:"last_name,omitempty"`
+	MiddleName  *string `db:"middle_name" json:"middle_name,omitempty"`
+	Nickname    *string `db:"nickname" json:"nickname,omitempty"`
+	Email       string  `db:"email" json:"email,omitempty"`
+	PhoneNumber *string `db:"phone_number" json:"phone_number,omitempty"`
 }

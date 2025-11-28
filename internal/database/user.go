@@ -53,7 +53,14 @@ func (db *RWDBOperation) CreateUser(ctx context.Context, logger zerolog.Logger, 
 
 	var id int64
 
-	err := db.db.QueryRow(timeout, queryCreateUser, req.Email).Scan(&id)
+	err := db.db.QueryRow(timeout, queryCreateUser,
+		req.Name,
+		req.LastName,
+		req.MiddleName,
+		req.Nickname,
+		req.Email,
+		req.PhoneNumber,
+	).Scan(&id)
 	if err != nil {
 		err = errors.New("failed to scan in CreateUser: " + err.Error())
 		logger.Error().Err(err).Msg("failed to CreateUser")
@@ -70,7 +77,14 @@ func (db *RWDBOperation) GetUserById(ctx context.Context, logger zerolog.Logger,
 	var user entities.User
 
 	err := db.db.QueryRow(timeout, queryCGetUserById, userId).Scan(
-		&user.Email, &user.CreatedAt)
+		&user.Name,
+		&user.LastName,
+		&user.MiddleName,
+		&user.Nickname,
+		&user.Email,
+		&user.PhoneNumber,
+		&user.CreatedAt,
+	)
 	if err != nil {
 		err = errors.New("failed to scan in GetUserById: " + err.Error())
 		logger.Error().Err(err).Msg("failed to GetUserById")
