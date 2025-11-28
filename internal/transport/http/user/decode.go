@@ -3,6 +3,8 @@ package user
 import (
 	"context"
 	"encoding/json"
+	"errors"
+	"github.com/go-chi/chi/v5"
 	"net/http"
 
 	"github.com/JeyKeyAlex/TourProject/internal/entities"
@@ -20,4 +22,14 @@ func decodeCreateUserRequest(_ context.Context, r *http.Request) (interface{}, e
 	}
 
 	return user, nil
+}
+
+func decodeGetUserByIdRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	var userId string
+
+	if userId = chi.URLParam(r, "id"); userId == "" {
+		return nil, errors.New("missing user id")
+	}
+
+	return userId, nil
 }

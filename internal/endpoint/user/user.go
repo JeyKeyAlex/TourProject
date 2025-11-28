@@ -2,9 +2,11 @@ package user
 
 import (
 	"context"
+	"errors"
+
 	"github.com/JeyKeyAlex/TourProject/internal/entities"
 	userSrv "github.com/JeyKeyAlex/TourProject/internal/service/user"
-	"github.com/JeyKeyAlex/TourProject/pkg/errors"
+	pkgErr "github.com/JeyKeyAlex/TourProject/pkg/errors"
 	"github.com/JeyKeyAlex/TourProject/pkg/helpers"
 	"github.com/go-kit/kit/endpoint"
 
@@ -25,14 +27,14 @@ func makeGetUserList(s userSrv.IService) endpoint.Endpoint {
 	}
 }
 
-func CreateUser(s userSrv.IService) endpoint.Endpoint {
+func makeCreateUser(s userSrv.IService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
-		serviceLogger := s.GetLogger().With().Str("func", "CreateUser").Logger()
+		serviceLogger := s.GetLogger().With().Str("func", "makeCreateUser").Logger()
 		serviceLogger.Info().Msg("calling s.createUser")
 
 		req, err := helpers.CastRequest[*entities.CreateUserRequest](request)
 		if err != nil {
-			serviceLogger.Error().Stack().Err(error_templates.ErrorDetailFromError(err)).Msg(errors.FailedCastRequest)
+			serviceLogger.Error().Stack().Err(error_templates.ErrorDetailFromError(err)).Msg(pkgErr.FailedCastRequest)
 			return nil, err
 		}
 
@@ -42,5 +44,26 @@ func CreateUser(s userSrv.IService) endpoint.Endpoint {
 		}
 
 		return &id, nil
+	}
+}
+
+func makeGetUserById(s userSrv.IService) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (interface{}, error) {
+		serviceLogger := s.GetLogger().With().Str("func", "makeCreateUser").Logger()
+		serviceLogger.Info().Msg("calling s.createUser")
+
+		userId, ok := request.(string)
+		if !ok {
+			err := errors.New("userid must be a string")
+			serviceLogger.Error().Stack().Err(error_templates.ErrorDetailFromError(err)).Msg(pkgErr.FailedCastRequest)
+			return nil, err
+		}
+
+		user, err := s.GetUserById(ctx, userId)
+		if err != nil {
+			return nil, err
+		}
+
+		return &user, nil
 	}
 }

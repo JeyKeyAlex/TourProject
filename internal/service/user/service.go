@@ -11,6 +11,7 @@ import (
 type IService interface {
 	GetUserList(ctx context.Context) (*entities.GetUserListResponse, error)
 	CreateUser(ctx context.Context, req *entities.CreateUserRequest) (*int64, error)
+	GetUserById(ctx context.Context, userId string) (*entities.User, error)
 
 	GetLogger() *zerolog.Logger
 }

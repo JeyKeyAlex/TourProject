@@ -62,3 +62,20 @@ func (db *RWDBOperation) CreateUser(ctx context.Context, logger zerolog.Logger, 
 
 	return &id, nil
 }
+
+func (db *RWDBOperation) GetUserById(ctx context.Context, logger zerolog.Logger, userId string) (*entities.User, error) {
+	timeout, cancel := context.WithTimeout(ctx, db.config.MaxIdleConnectionTimeout)
+	defer cancel()
+
+	var user entities.User
+
+	err := db.db.QueryRow(timeout, queryCGetUserById, userId).Scan(
+		&user.Email, &user.CreatedAt)
+	if err != nil {
+		err = errors.New("failed to scan in GetUserById: " + err.Error())
+		logger.Error().Err(err).Msg("failed to GetUserById")
+		return nil, err
+	}
+
+	return &user, nil
+}

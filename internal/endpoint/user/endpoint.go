@@ -8,11 +8,13 @@ import (
 type Endpoints struct {
 	GetUserList endpoint.Endpoint
 	CreateUser  endpoint.Endpoint
+	GetUserById endpoint.Endpoint
 }
 
 func MakeEndpoints(s user.IService) Endpoints {
 	return Endpoints{
 		GetUserList: makeGetUserList(s),
-		CreateUser:  CreateUser(s),
+		CreateUser:  makeCreateUser(s),
+		GetUserById: makeGetUserById(s),
 	}
 }

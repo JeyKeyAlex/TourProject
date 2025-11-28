@@ -24,3 +24,14 @@ func (s *Service) CreateUser(ctx context.Context, req *entities.CreateUserReques
 	}
 	return id, nil
 }
+
+func (s *Service) GetUserById(ctx context.Context, userId string) (*entities.User, error) {
+	logger := s.logger.With().Str("service", "GetUserById").Logger()
+
+	user, err := s.rwdbOperation.GetUserById(ctx, logger, userId)
+	if err != nil {
+		return nil, err
+	}
+
+	return user, nil
+}
