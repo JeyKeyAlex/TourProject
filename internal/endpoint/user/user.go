@@ -3,7 +3,6 @@ package user
 import (
 	"context"
 	"errors"
-
 	"github.com/JeyKeyAlex/TourProject/internal/entities"
 	userSrv "github.com/JeyKeyAlex/TourProject/internal/service/user"
 	pkgErr "github.com/JeyKeyAlex/TourProject/pkg/errors"

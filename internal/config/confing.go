@@ -11,6 +11,11 @@ import (
 	"github.com/sethvargo/go-envconfig"
 )
 
+const (
+	HeaderContentTypeKey  = "Content-Type"
+	HeaderContentTypeJSON = "application/json; charset=utf-8"
+)
+
 func NewConfig() (*Configuration, error) {
 	var envFiles []string
 	if _, err := os.Stat(".env"); err == nil {
