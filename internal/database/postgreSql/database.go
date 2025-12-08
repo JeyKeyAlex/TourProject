@@ -1,4 +1,4 @@
-package database
+package postgreSql
 
 import (
 	"context"
@@ -10,7 +10,7 @@ import (
 
 type RWDBOperationer interface {
 	GetUserList(ctx context.Context, logger zerolog.Logger) (*entities.GetUserListResponse, error)
-	CreateUser(ctx context.Context, logger zerolog.Logger, req *entities.CreateUserRequest) (*int64, error)
+	ApproveUser(ctx context.Context, logger zerolog.Logger, req *entities.CreateUserRequest) (*int64, error)
 	GetUserById(ctx context.Context, logger zerolog.Logger, userId string) (*entities.User, error)
 }
 type dbp struct {

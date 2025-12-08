@@ -15,14 +15,14 @@ func (s *Service) GetUserList(ctx context.Context) (*entities.GetUserListRespons
 	return list, nil
 }
 
-func (s *Service) CreateUser(ctx context.Context, req *entities.CreateUserRequest) (*int64, error) {
-	logger := s.logger.With().Str("service", "CreateUser").Logger()
+func (s *Service) CreateUser(ctx context.Context, req *entities.CreateUserRequest) error {
+	logger := s.logger.With().Str("service", "ApproveUser").Logger()
 
-	id, err := s.rwdbOperation.CreateUser(ctx, logger, req)
+	err := s.redisDB.SaveUser(ctx, logger, req, s.appConfig)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	return id, nil
+	return nil
 }
 
 func (s *Service) GetUserById(ctx context.Context, userId string) (*entities.User, error) {
@@ -34,4 +34,19 @@ func (s *Service) GetUserById(ctx context.Context, userId string) (*entities.Use
 	}
 
 	return user, nil
+}
+
+func (s *Service) ApproveUser(ctx context.Context, email string) (*int64, error) {
+	logger := s.logger.With().Str("service", "ApproveUser").Logger()
+
+	user, err := s.redisDB.GetTempUser(ctx, logger, email, s.appConfig)
+	if err != nil {
+		return nil, err
+	}
+
+	id, err := s.rwdbOperation.ApproveUser(ctx, logger, user)
+	if err != nil {
+		return nil, err
+	}
+	return id, nil
 }

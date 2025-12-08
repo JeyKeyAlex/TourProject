@@ -11,9 +11,11 @@ import (
 	"time"
 
 	"github.com/JeyKeyAlex/TourProject/internal/config"
+	"github.com/JeyKeyAlex/TourProject/internal/database/postgreSql"
+	"github.com/JeyKeyAlex/TourProject/internal/database/redis"
 	"github.com/JeyKeyAlex/TourProject/pkg/logger"
 
-	"github.com/JeyKeyAlex/TourProject/internal/database"
+	goRedis "github.com/redis/go-redis/v9"
 	"github.com/rs/zerolog"
 )
 
@@ -68,9 +70,24 @@ func main() {
 	}
 	defer rwdb.Close()
 
-	RWDBOperationer := database.NewRWDBOperationer(rwdb, &appConfig.RWDB)
+	RWDBOperationer := postgreSql.NewRWDBOperationer(rwdb, &appConfig.RWDB)
 
-	serviceEndpoints := initEndpoints(RWDBOperationer, &netLogger, appConfig)
+	rds, err := initRedisConnection(appConfig)
+	if err != nil {
+		coreLogger.Fatal().Err(err).Msg("failed to establish a connection with the redis")
+	} else {
+		coreLogger.Info().Msg("successful connection with the redis")
+	}
+	defer func(rds *goRedis.Client) {
+		err = rds.Close()
+		if err != nil {
+			coreLogger.Error().Msg("failed to close the redis connection")
+		}
+	}(rds)
+
+	redisDB, err := redis.New(rds)
+
+	serviceEndpoints := initEndpoints(RWDBOperationer, redisDB, &netLogger, appConfig)
 
 	// TODO init client (grpc, http, smtp,...)
 	// TODO init messenger broker (Kafka, Rabbit, Nats)

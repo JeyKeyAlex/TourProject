@@ -37,7 +37,28 @@ func makeCreateUser(s userSrv.IService) endpoint.Endpoint {
 			return nil, err
 		}
 
-		id, err := s.CreateUser(ctx, req)
+		err = s.CreateUser(ctx, req)
+		if err != nil {
+			return nil, err
+		}
+
+		return nil, nil
+	}
+}
+
+func makeApproveUser(s userSrv.IService) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (interface{}, error) {
+		serviceLogger := s.GetLogger().With().Str("func", "makeApproveUser").Logger()
+		serviceLogger.Info().Msg("calling s.makeApproveUser")
+
+		email, ok := request.(string)
+		if !ok {
+			err := errors.New("email must be a string")
+			serviceLogger.Error().Stack().Err(error_templates.ErrorDetailFromError(err)).Msg(pkgErr.FailedCastRequest)
+			return nil, err
+		}
+
+		id, err := s.ApproveUser(ctx, email)
 		if err != nil {
 			return nil, err
 		}

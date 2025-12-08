@@ -1,4 +1,4 @@
-package database
+package postgreSql
 
 import (
 	"context"
@@ -56,7 +56,7 @@ func (db *RWDBOperation) GetUserList(ctx context.Context, logger zerolog.Logger)
 	return resp, nil
 }
 
-func (db *RWDBOperation) CreateUser(ctx context.Context, logger zerolog.Logger, req *entities.CreateUserRequest) (*int64, error) {
+func (db *RWDBOperation) ApproveUser(ctx context.Context, logger zerolog.Logger, req *entities.CreateUserRequest) (*int64, error) {
 	timeout, cancel := context.WithTimeout(ctx, db.config.MaxIdleConnectionTimeout)
 	defer cancel()
 
@@ -71,8 +71,8 @@ func (db *RWDBOperation) CreateUser(ctx context.Context, logger zerolog.Logger, 
 		req.PhoneNumber,
 	).Scan(&id)
 	if err != nil {
-		err = errors.New("failed to scan in CreateUser: " + err.Error())
-		logger.Error().Err(err).Msg("failed to CreateUser")
+		err = errors.New("failed to scan in ApproveUser: " + err.Error())
+		logger.Error().Err(err).Msg("failed to ApproveUser")
 		return nil, err
 	}
 

@@ -49,7 +49,7 @@ type (
 		GRPC     GRPCConfig     `env:",prefix=GRPC_"`
 		RWDB     DBConfig       `env:",prefix=RWDB_"`
 		RDB      DBConfig       `env:",prefix=RDB_"`
-		REDIS    RedisConfig    `env:",prefix=REDIS_"`
+		Redis    RedisConfig    `env:",prefix=REDIS_"`
 		LifeTime LifeTimeConfig `env:",prefix=LIFE_TIME_"`
 		ApiKey   ApiKeyConfig   `env:",prefix=API_KEY_"`
 		Role     RoleConfig     `env:",prefix=ROLE_"`

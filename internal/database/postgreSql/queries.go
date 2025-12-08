@@ -1,4 +1,4 @@
-package database
+package postgreSql
 
 const (
 	queryGetUserList  = `SELECT * FROM users.list;`

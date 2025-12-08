@@ -3,6 +3,8 @@ package main
 import (
 	"context"
 	"github.com/JeyKeyAlex/TourProject/internal/config"
+	"github.com/JeyKeyAlex/TourProject/internal/database/postgreSql"
+	"github.com/JeyKeyAlex/TourProject/internal/database/redis"
 	"github.com/rs/zerolog"
 	"net"
 	"net/http"
@@ -15,13 +17,13 @@ import (
 	kithttp "github.com/go-kit/kit/transport/http"
 	"github.com/jackc/pgx/v5/pgxpool"
 
-	"github.com/JeyKeyAlex/TourProject/internal/database"
 	"github.com/JeyKeyAlex/TourProject/internal/endpoint"
 	userEp "github.com/JeyKeyAlex/TourProject/internal/endpoint/user"
 	srvUser "github.com/JeyKeyAlex/TourProject/internal/service/user"
 	tpHTTP "github.com/JeyKeyAlex/TourProject/internal/transport/http"
 	custumMiddlware "github.com/JeyKeyAlex/TourProject/internal/transport/http/middleware"
 	tpHTTPUser "github.com/JeyKeyAlex/TourProject/internal/transport/http/user"
+	goRedis "github.com/redis/go-redis/v9"
 )
 
 func initRuntime(useCPUs, maxThreads int, logger *zerolog.Logger) {
@@ -55,11 +57,12 @@ func DBinit(connectionString string) (*pgxpool.Pool, error) {
 }
 
 func initEndpoints(
-	rwdbOperationer database.RWDBOperationer,
+	rwdbOperationer postgreSql.RWDBOperationer,
+	redisDB redis.Redis,
 	logger *zerolog.Logger,
 	appConfig *config.Configuration,
 ) endpoint.ServiceEndpoints {
-	userSrv := srvUser.NewService(rwdbOperationer, logger, appConfig)
+	userSrv := srvUser.NewService(rwdbOperationer, redisDB, logger, appConfig)
 	return endpoint.ServiceEndpoints{
 		UserEP: userEp.MakeEndpoints(userSrv),
 	}
@@ -108,4 +111,19 @@ func initKitHTTP(endpoints endpoint.ServiceEndpoints, router *chi.Mux, listenErr
 	time.Sleep(10 * time.Millisecond)
 
 	return httpServer, l
+}
+
+func initRedisConnection(appConfig *config.Configuration) (*goRedis.Client, error) {
+	opts, err := goRedis.ParseURL(appConfig.Redis.ConnectionString)
+	if err != nil {
+		return nil, err
+	}
+	rds := goRedis.NewClient(opts)
+
+	_, err = rds.Ping(context.Background()).Result()
+	if err != nil {
+		return nil, err
+	}
+
+	return rds, nil
 }
