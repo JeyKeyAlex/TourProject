@@ -13,13 +13,30 @@ import (
 	"google.golang.org/grpc/codes"
 )
 
-func (r *redisDB) SaveUser(ctx context.Context, logger zerolog.Logger, req *entities.CreateUserRequest, cfg *config.Configuration) error {
+func (r *redisP) SaveUser(ctx context.Context, logger zerolog.Logger, req *entities.CreateUserRequest, cfg *config.Configuration) error {
 	timeoutCtx, cancel := context.WithTimeout(ctx, cfg.Redis.Timeout)
 	defer cancel()
 
-	const oper = "database.Redis.SaveSession"
+	const oper = "database.Redis.SaveUser"
 
-	cmd := r.dbRedis.dbRedis.HSet(timeoutCtx, req.Email, req)
+	// Convert struct fields to field-value pairs for HSet
+	fields := map[string]interface{}{
+		"name":      req.Name,
+		"last_name": req.LastName,
+		"email":     req.Email,
+	}
+
+	if req.MiddleName != nil {
+		fields["middle_name"] = *req.MiddleName
+	}
+	if req.Nickname != nil {
+		fields["nickname"] = *req.Nickname
+	}
+	if req.PhoneNumber != nil {
+		fields["phone_number"] = *req.PhoneNumber
+	}
+
+	cmd := r.dbRedis.HSet(timeoutCtx, req.Email, fields)
 	if err := cmd.Err(); err != nil {
 		logger.Error().Stack().Err(err).Msg(oper)
 		return fmt.Errorf("%s: %w", oper, err)
@@ -27,13 +44,13 @@ func (r *redisDB) SaveUser(ctx context.Context, logger zerolog.Logger, req *enti
 	return nil
 }
 
-func (r *redisDB) GetTempUser(ctx context.Context, logger zerolog.Logger, email string, cfg *config.Configuration) (*entities.CreateUserRequest, error) {
+func (r *redisP) GetTempUser(ctx context.Context, logger zerolog.Logger, email string, cfg *config.Configuration) (*entities.CreateUserRequest, error) {
 	timeoutCtx, cancel := context.WithTimeout(ctx, cfg.Redis.Timeout)
 	defer cancel()
 
 	var user entities.CreateUserRequest
 
-	resultMap := r.dbRedis.dbRedis.HGetAll(timeoutCtx, email)
+	resultMap := r.dbRedis.HGetAll(timeoutCtx, email)
 	if err := resultMap.Err(); err != nil {
 		logger.Error().Stack().Err(err).Msg("failed to get temporary user")
 		return nil, error_templates.New(err.Error(), err, codes.Internal, http.StatusInternalServerError)
@@ -55,10 +72,26 @@ func (r *redisDB) GetTempUser(ctx context.Context, logger zerolog.Logger, email 
 	nick := userMap["nickname"]
 	user.Nickname = &nick
 
-	user.Email = userMap[email]
+	user.Email = userMap["email"]
 
 	phone := userMap["phone_number"]
 	user.PhoneNumber = &phone
 
 	return &user, nil
+}
+
+func (r *redisP) DeleteUser(ctx context.Context, logger zerolog.Logger, email string, cfg *config.Configuration) error {
+	timeoutCtx, cancel := context.WithTimeout(ctx, cfg.Redis.Timeout)
+	defer cancel()
+
+	const oper = "pkg.database.DeleteSession"
+
+	cmd := r.dbRedis.Del(timeoutCtx, email)
+	if cmd.Val() == 0 {
+		err := errors.New("failed to delete temporary user")
+		logger.Error().Stack().Err(err).Msg(oper)
+		return error_templates.New(err.Error(), err, codes.InvalidArgument, http.StatusBadRequest)
+	}
+
+	return nil
 }

@@ -12,16 +12,13 @@ type redisP struct {
 	dbRedis *redis.Client
 }
 
-type redisDB struct {
-	dbRedis redisP
-}
-
 type Redis interface {
 	SaveUser(ctx context.Context, logger zerolog.Logger, req *entities.CreateUserRequest, cfg *config.Configuration) error
 	GetTempUser(ctx context.Context, logger zerolog.Logger, email string, cfg *config.Configuration) (*entities.CreateUserRequest, error)
+	DeleteUser(ctx context.Context, logger zerolog.Logger, email string, cfg *config.Configuration) error
 }
 
-func New(connStr *redis.Client) (Redis, error) {
-	r := redisDB{dbRedis: redisP{dbRedis: connStr}}
+func New(connClient *redis.Client) (Redis, error) {
+	r := redisP{dbRedis: connClient}
 	return &r, nil
 }

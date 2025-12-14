@@ -3,9 +3,10 @@ package common
 import (
 	"context"
 	"encoding/json"
+	"net/http"
+
 	"github.com/JeyKeyAlex/TourProject/internal/config"
 	"github.com/JeyKeyAlex/TourProject/pkg/error_templates"
-	"net/http"
 )
 
 // EncodeErrorResponse is a function that forms the error response by error message and response code got from codeFrom function.

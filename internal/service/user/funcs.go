@@ -2,6 +2,7 @@ package user
 
 import (
 	"context"
+
 	"github.com/JeyKeyAlex/TourProject/internal/entities"
 )
 
@@ -16,7 +17,7 @@ func (s *Service) GetUserList(ctx context.Context) (*entities.GetUserListRespons
 }
 
 func (s *Service) CreateUser(ctx context.Context, req *entities.CreateUserRequest) error {
-	logger := s.logger.With().Str("service", "ApproveUser").Logger()
+	logger := s.logger.With().Str("service", "CreateUser").Logger()
 
 	err := s.redisDB.SaveUser(ctx, logger, req, s.appConfig)
 	if err != nil {
@@ -48,5 +49,11 @@ func (s *Service) ApproveUser(ctx context.Context, email string) (*int64, error)
 	if err != nil {
 		return nil, err
 	}
+
+	err = s.redisDB.DeleteUser(ctx, logger, email, s.appConfig)
+	if err != nil {
+		return nil, err
+	}
+
 	return id, nil
 }
