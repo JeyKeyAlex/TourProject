@@ -2,6 +2,7 @@ package postgreSql
 
 import (
 	"context"
+
 	"github.com/JeyKeyAlex/TourProject/internal/config"
 	"github.com/JeyKeyAlex/TourProject/internal/entities"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -12,6 +13,7 @@ type RWDBOperationer interface {
 	GetUserList(ctx context.Context, logger zerolog.Logger) (*entities.GetUserListResponse, error)
 	ApproveUser(ctx context.Context, logger zerolog.Logger, req *entities.CreateUserRequest) (*int64, error)
 	GetUserById(ctx context.Context, logger zerolog.Logger, userId string) (*entities.User, error)
+	RollbackApproveUser(ctx context.Context, logger zerolog.Logger, userId int64) error
 }
 type dbp struct {
 	db     *pgxpool.Pool

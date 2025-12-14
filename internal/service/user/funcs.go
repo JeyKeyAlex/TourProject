@@ -52,6 +52,15 @@ func (s *Service) ApproveUser(ctx context.Context, email string) (*int64, error)
 
 	err = s.redisDB.DeleteUser(ctx, logger, email, s.appConfig)
 	if err != nil {
+		rollbackErr := s.rwdbOperation.RollbackApproveUser(ctx, logger, *id)
+		if rollbackErr != nil {
+			// Логируем обе ошибки, но возвращаем исходную ошибку удаления из Redis
+			logger.Error().Err(err).Err(rollbackErr).Int64("user_id", *id).
+				Msg("failed to delete from Redis and rollback PostgreSQL operation")
+			return nil, err
+		}
+		logger.Warn().Err(err).Int64("user_id", *id).
+			Msg("failed to delete from Redis, rolled back PostgreSQL operation")
 		return nil, err
 	}
 

@@ -84,7 +84,7 @@ func (r *redisP) DeleteUser(ctx context.Context, logger zerolog.Logger, email st
 	timeoutCtx, cancel := context.WithTimeout(ctx, cfg.Redis.Timeout)
 	defer cancel()
 
-	const oper = "pkg.database.DeleteSession"
+	const oper = "database.Redis.DeleteUser"
 
 	cmd := r.dbRedis.Del(timeoutCtx, email)
 	if cmd.Val() == 0 {

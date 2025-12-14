@@ -3,6 +3,7 @@ package postgreSql
 import (
 	"context"
 	"errors"
+
 	"github.com/JeyKeyAlex/TourProject/internal/entities"
 	"github.com/rs/zerolog"
 )
@@ -101,4 +102,18 @@ func (db *RWDBOperation) GetUserById(ctx context.Context, logger zerolog.Logger,
 	}
 
 	return &user, nil
+}
+
+func (db *RWDBOperation) RollbackApproveUser(ctx context.Context, logger zerolog.Logger, userId int64) error {
+	timeout, cancel := context.WithTimeout(ctx, db.config.MaxIdleConnectionTimeout)
+	defer cancel()
+
+	_, err := db.db.Exec(timeout, queryRollbackApproveUser, userId)
+	if err != nil {
+		err = errors.New("failed to rollback ApproveUser: " + err.Error())
+		logger.Error().Err(err).Msg("failed to RollbackApproveUser")
+		return err
+	}
+
+	return nil
 }
