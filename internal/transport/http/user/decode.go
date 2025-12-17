@@ -43,3 +43,13 @@ func decodeApproveUserRequest(_ context.Context, r *http.Request) (interface{}, 
 
 	return email, nil
 }
+
+func decodeDeleteUserByIdRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	var userId string
+
+	if userId = chi.URLParam(r, "id"); userId == "" {
+		return nil, errors.New("missing user id")
+	}
+
+	return userId, nil
+}

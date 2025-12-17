@@ -6,7 +6,7 @@ import (
 	"github.com/JeyKeyAlex/TourProject/internal/entities"
 	userSrv "github.com/JeyKeyAlex/TourProject/internal/service/user"
 	pkgErr "github.com/JeyKeyAlex/TourProject/pkg/errors"
-	"github.com/JeyKeyAlex/TourProject/pkg/helpers"
+	"github.com/JeyKeyAlex/TourProject/pkg/helpers/validate"
 	"github.com/go-kit/kit/endpoint"
 
 	"github.com/JeyKeyAlex/TourProject/pkg/error_templates"
@@ -31,7 +31,7 @@ func makeCreateUser(s userSrv.IService) endpoint.Endpoint {
 		serviceLogger := s.GetLogger().With().Str("func", "makeCreateUser").Logger()
 		serviceLogger.Info().Msg("calling s.createUser")
 
-		req, err := helpers.CastRequest[*entities.CreateUserRequest](request)
+		req, err := validate.CastRequest[*entities.CreateUserRequest](request)
 		if err != nil {
 			serviceLogger.Error().Stack().Err(error_templates.ErrorDetailFromError(err)).Msg(pkgErr.FailedCastRequest)
 			return nil, err
@@ -69,8 +69,8 @@ func makeApproveUser(s userSrv.IService) endpoint.Endpoint {
 
 func makeGetUserById(s userSrv.IService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
-		serviceLogger := s.GetLogger().With().Str("func", "makeCreateUser").Logger()
-		serviceLogger.Info().Msg("calling s.createUser")
+		serviceLogger := s.GetLogger().With().Str("func", "makeGetUserById").Logger()
+		serviceLogger.Info().Msg("calling s.GetUserById")
 
 		userId, ok := request.(string)
 		if !ok {
@@ -85,5 +85,26 @@ func makeGetUserById(s userSrv.IService) endpoint.Endpoint {
 		}
 
 		return &user, nil
+	}
+}
+
+func makeDeleteUserById(s userSrv.IService) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (interface{}, error) {
+		serviceLogger := s.GetLogger().With().Str("func", "makeDeleteUserById").Logger()
+		serviceLogger.Info().Msg("calling s.DeleteUserById")
+
+		userId, ok := request.(string)
+		if !ok {
+			err := errors.New("userid must be a string")
+			serviceLogger.Error().Stack().Err(error_templates.ErrorDetailFromError(err)).Msg(pkgErr.FailedCastRequest)
+			return nil, err
+		}
+
+		err := s.DeleteUserById(ctx, userId)
+		if err != nil {
+			return nil, err
+		}
+
+		return nil, nil
 	}
 }

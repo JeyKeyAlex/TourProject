@@ -13,7 +13,7 @@ type RWDBOperationer interface {
 	GetUserList(ctx context.Context, logger zerolog.Logger) (*entities.GetUserListResponse, error)
 	ApproveUser(ctx context.Context, logger zerolog.Logger, req *entities.CreateUserRequest) (*int64, error)
 	GetUserById(ctx context.Context, logger zerolog.Logger, userId string) (*entities.User, error)
-	RollbackApproveUser(ctx context.Context, logger zerolog.Logger, userId int64) error
+	DeleteUserById(ctx context.Context, logger zerolog.Logger, userId string) error
 }
 type dbp struct {
 	db     *pgxpool.Pool

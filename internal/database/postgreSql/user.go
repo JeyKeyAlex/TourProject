@@ -86,7 +86,7 @@ func (db *RWDBOperation) GetUserById(ctx context.Context, logger zerolog.Logger,
 
 	var user entities.User
 
-	err := db.db.QueryRow(timeout, queryCGetUserById, userId).Scan(
+	err := db.db.QueryRow(timeout, queryGetUserById, userId).Scan(
 		&user.Name,
 		&user.LastName,
 		&user.MiddleName,
@@ -104,14 +104,14 @@ func (db *RWDBOperation) GetUserById(ctx context.Context, logger zerolog.Logger,
 	return &user, nil
 }
 
-func (db *RWDBOperation) RollbackApproveUser(ctx context.Context, logger zerolog.Logger, userId int64) error {
+func (db *RWDBOperation) DeleteUserById(ctx context.Context, logger zerolog.Logger, userId string) error {
 	timeout, cancel := context.WithTimeout(ctx, db.config.MaxIdleConnectionTimeout)
 	defer cancel()
 
-	_, err := db.db.Exec(timeout, queryRollbackApproveUser, userId)
+	_, err := db.db.Exec(timeout, queryDeleteUserById, userId)
 	if err != nil {
-		err = errors.New("failed to rollback ApproveUser: " + err.Error())
-		logger.Error().Err(err).Msg("failed to RollbackApproveUser")
+		err = errors.New("failed to delete user: " + err.Error())
+		logger.Error().Err(err).Msg("failed to DeleteUserById")
 		return err
 	}
 
