@@ -58,7 +58,7 @@ func (r *redisP) GetTempUser(ctx context.Context, logger zerolog.Logger, email s
 
 	userMap := resultMap.Val()
 	if len(userMap) == 0 || userMap == nil {
-		err := errors.New("no users found, you need to register via CreateUser before approval")
+		err := errors.New("no users found, you need to register via Create before approval")
 		logger.Error().Stack().Err(err).Msg("failed to get temporary user")
 		return nil, error_templates.New(err.Error(), err, codes.NotFound, http.StatusNotFound)
 	}

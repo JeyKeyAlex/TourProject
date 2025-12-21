@@ -17,6 +17,7 @@ import (
 
 	goRedis "github.com/redis/go-redis/v9"
 	"github.com/rs/zerolog"
+	"google.golang.org/grpc"
 )
 
 func main() {
@@ -105,10 +106,18 @@ func main() {
 		}
 	}()
 
-	runApp(httpServer, listenErr, coreLogger)
+	grpcServer, grpcListener := initKitGRPC(appConfig, serviceEndpoints, netLogger, listenErr)
+	defer func() {
+		err = grpcListener.Close()
+		if err != nil {
+			coreLogger.Fatal().Err(err).Msg("error closing grpc listener")
+		}
+	}()
+
+	runApp(grpcServer, httpServer, listenErr, coreLogger)
 }
 
-func runApp(httpServer *http.Server, listenErr chan error, coreLogger zerolog.Logger) {
+func runApp(grpcServer *grpc.Server, httpServer *http.Server, listenErr chan error, coreLogger zerolog.Logger) {
 
 	var shutdownCh = make(chan os.Signal, 1)
 	signal.Notify(shutdownCh, os.Interrupt, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
@@ -130,6 +139,8 @@ func runApp(httpServer *http.Server, listenErr chan error, coreLogger zerolog.Lo
 			if err != nil && err != http.ErrServerClosed {
 				coreLogger.Error().Err(err).Msg("received shutdown error")
 			}
+			grpcServer.GracefulStop()
+			coreLogger.Info().Msg("server loop stopped")
 			return
 		}
 	}

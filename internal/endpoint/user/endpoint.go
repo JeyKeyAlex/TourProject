@@ -6,19 +6,19 @@ import (
 )
 
 type Endpoints struct {
-	GetUserList    endpoint.Endpoint
-	CreateUser     endpoint.Endpoint
-	ApproveUser    endpoint.Endpoint
-	GetUserById    endpoint.Endpoint
-	DeleteUserById endpoint.Endpoint
+	GetUserList endpoint.Endpoint
+	Create      endpoint.Endpoint
+	Approve     endpoint.Endpoint
+	GetUserById endpoint.Endpoint
+	Delete      endpoint.Endpoint
 }
 
 func MakeEndpoints(s user.IService) Endpoints {
 	return Endpoints{
-		GetUserList:    makeGetUserList(s),
-		CreateUser:     makeCreateUser(s),
-		ApproveUser:    makeApproveUser(s),
-		GetUserById:    makeGetUserById(s),
-		DeleteUserById: makeDeleteUserById(s),
+		GetUserList: makeGetUserList(s),
+		Create:      makeCreateUser(s),
+		Approve:     makeApproveUser(s),
+		GetUserById: makeGetUserById(s),
+		Delete:      makeDeleteUserById(s),
 	}
 }

@@ -72,15 +72,15 @@ func (db *dbp) ApproveUser(ctx context.Context, logger zerolog.Logger, req *enti
 		req.PhoneNumber,
 	).Scan(&id)
 	if err != nil {
-		err = errors.New("failed to scan in ApproveUser: " + err.Error())
-		logger.Error().Err(err).Msg("failed to ApproveUser")
+		err = errors.New("failed to scan in Approve: " + err.Error())
+		logger.Error().Err(err).Msg("failed to Approve")
 		return nil, err
 	}
 
 	return &id, nil
 }
 
-func (db *dbp) GetUserById(ctx context.Context, logger zerolog.Logger, userId string) (*entities.User, error) {
+func (db *dbp) GetUserById(ctx context.Context, logger zerolog.Logger, userId int64) (*entities.User, error) {
 	timeout, cancel := context.WithTimeout(ctx, db.config.MaxIdleConnectionTimeout)
 	defer cancel()
 
@@ -111,7 +111,7 @@ func (db *dbp) DeleteUserById(ctx context.Context, logger zerolog.Logger, userId
 	_, err := db.db.Exec(timeout, queryDeleteUserById, userId)
 	if err != nil {
 		err = errors.New("failed to delete user: " + err.Error())
-		logger.Error().Err(err).Msg("failed to DeleteUserById")
+		logger.Error().Err(err).Msg("failed to Delete")
 		return err
 	}
 

@@ -77,9 +77,9 @@ func makeGetUserById(s userSrv.IService) endpoint.Endpoint {
 		serviceLogger := s.GetLogger().With().Str("func", "makeGetUserById").Str("request_id", reqID).Logger()
 		serviceLogger.Info().Msg("calling s.GetUserById")
 
-		userId, ok := request.(string)
+		userId, ok := request.(int64)
 		if !ok {
-			err := errors.New("userid must be a string")
+			err := errors.New("userid must be int64")
 			serviceLogger.Error().Stack().Err(error_templates.ErrorDetailFromError(err)).Msg(pkgErr.FailedCastRequest)
 			return nil, err
 		}
@@ -97,7 +97,7 @@ func makeDeleteUserById(s userSrv.IService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		reqID, ctx := middleware.GetRequestID(ctx)
 		serviceLogger := s.GetLogger().With().Str("func", "makeDeleteUserById").Str("request_id", reqID).Logger()
-		serviceLogger.Info().Msg("calling s.DeleteUserById")
+		serviceLogger.Info().Msg("calling s.Delete")
 
 		userId, ok := request.(string)
 		if !ok {

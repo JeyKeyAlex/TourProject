@@ -2,9 +2,6 @@ package main
 
 import (
 	"context"
-	"github.com/JeyKeyAlex/TourProject/internal/config"
-	"github.com/JeyKeyAlex/TourProject/internal/database/postgreSql"
-	"github.com/JeyKeyAlex/TourProject/internal/database/redis"
 	"github.com/rs/zerolog"
 	"net"
 	"net/http"
@@ -14,16 +11,25 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	kitgrpc "github.com/go-kit/kit/transport/grpc"
 	kithttp "github.com/go-kit/kit/transport/http"
 	"github.com/jackc/pgx/v5/pgxpool"
+	goRedis "github.com/redis/go-redis/v9"
+	googlegrpc "google.golang.org/grpc"
 
+	"github.com/JeyKeyAlex/TourProject/internal/config"
+	"github.com/JeyKeyAlex/TourProject/internal/database/postgreSql"
+	"github.com/JeyKeyAlex/TourProject/internal/database/redis"
 	"github.com/JeyKeyAlex/TourProject/internal/endpoint"
 	userEp "github.com/JeyKeyAlex/TourProject/internal/endpoint/user"
 	srvUser "github.com/JeyKeyAlex/TourProject/internal/service/user"
+	tpGRPC "github.com/JeyKeyAlex/TourProject/internal/transport/grpc"
+	tpGRPCUser "github.com/JeyKeyAlex/TourProject/internal/transport/grpc/user"
 	tpHTTP "github.com/JeyKeyAlex/TourProject/internal/transport/http"
 	custumMiddlware "github.com/JeyKeyAlex/TourProject/internal/transport/http/middleware"
 	tpHTTPUser "github.com/JeyKeyAlex/TourProject/internal/transport/http/user"
-	goRedis "github.com/redis/go-redis/v9"
+
+	pbUser "github.com/JeyKeyAlex/TourProject-proto/go-genproto/user"
 )
 
 func initRuntime(useCPUs, maxThreads int, logger *zerolog.Logger) {
@@ -110,6 +116,30 @@ func initKitHTTP(endpoints endpoint.ServiceEndpoints, router *chi.Mux, listenErr
 	time.Sleep(10 * time.Millisecond)
 
 	return httpServer, l
+}
+
+func initKitGRPC(appConfig *config.Configuration, endpoints endpoint.ServiceEndpoints, netLogger zerolog.Logger, listenErr chan error) (*googlegrpc.Server, net.Listener) {
+	var serverOptions []kitgrpc.ServerOption
+
+	grpcUserServer := tpGRPCUser.NewServer(endpoints.UserEP, serverOptions)
+
+	grpcServer := googlegrpc.NewServer(
+		googlegrpc.MaxRecvMsgSize(appConfig.GRPC.MaxRequestBodySize),
+		googlegrpc.MaxSendMsgSize(appConfig.GRPC.MaxRequestBodySize),
+	)
+
+	pbUser.RegisterUserServiceServer(grpcServer, grpcUserServer)
+
+	l, err := net.Listen(appConfig.GRPC.Network, appConfig.GRPC.Address)
+	if err != nil {
+		netLogger.Fatal().Err(err).Msg("failed to init net.Listen for grpc")
+	} else {
+		netLogger.Info().Msg("successful net.Listen for grpc init")
+	}
+
+	go tpGRPC.RunGRPCServer(grpcServer, l, netLogger, listenErr)
+	time.Sleep(10 * time.Millisecond)
+	return grpcServer, l
 }
 
 func initRedisConnection(appConfig *config.Configuration) (*goRedis.Client, error) {

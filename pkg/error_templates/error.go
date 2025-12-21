@@ -3,6 +3,7 @@ package error_templates
 import (
 	"github.com/pkg/errors"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"net/http"
 )
 
@@ -51,4 +52,8 @@ func ErrorDetailFromError(err error) error {
 	}
 
 	return err
+}
+
+func (e *OutputError) GetGRPC() error {
+	return status.Error(e.grpcStatusCode, e.errorMessage)
 }

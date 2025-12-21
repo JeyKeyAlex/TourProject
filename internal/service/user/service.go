@@ -14,7 +14,7 @@ type IService interface {
 	GetUserList(ctx context.Context) (*entities.GetUserListResponse, error)
 	CreateUser(ctx context.Context, req *entities.CreateUserRequest) error
 	ApproveUser(ctx context.Context, email string) (*int64, error)
-	GetUserById(ctx context.Context, userId string) (*entities.User, error)
+	GetUserById(ctx context.Context, userId int64) (*entities.User, error)
 	DeleteUserById(ctx context.Context, userId string) error
 
 	GetLogger() *zerolog.Logger

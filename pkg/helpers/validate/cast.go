@@ -17,5 +17,6 @@ func CastRequest[T any](request any) (T, error) {
 		err := error_templates.New("invalid request fields", errors.New(pkgerr.FailedCastRequest), codes.InvalidArgument, http.StatusBadRequest)
 		return *new(T), error_templates.WrapErrorDetail(err, fmt.Sprintf("cannot cast request to %T", req))
 	}
+
 	return req, nil
 }

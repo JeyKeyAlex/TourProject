@@ -19,7 +19,7 @@ func (s *Service) GetUserList(ctx context.Context) (*entities.GetUserListRespons
 }
 
 func (s *Service) CreateUser(ctx context.Context, req *entities.CreateUserRequest) error {
-	logger := s.logger.With().Str("service", "CreateUser").Logger()
+	logger := s.logger.With().Str("service", "Create").Logger()
 
 	err := s.redisDB.SaveUser(ctx, logger, req, s.appConfig)
 	if err != nil {
@@ -28,7 +28,7 @@ func (s *Service) CreateUser(ctx context.Context, req *entities.CreateUserReques
 	return nil
 }
 
-func (s *Service) GetUserById(ctx context.Context, userId string) (*entities.User, error) {
+func (s *Service) GetUserById(ctx context.Context, userId int64) (*entities.User, error) {
 	logger := s.logger.With().Str("service", "GetUserById").Logger()
 
 	user, err := s.rwdbOperation.GetUserById(ctx, logger, userId)
@@ -40,7 +40,7 @@ func (s *Service) GetUserById(ctx context.Context, userId string) (*entities.Use
 }
 
 func (s *Service) DeleteUserById(ctx context.Context, userId string) error {
-	logger := s.logger.With().Str("service", "DeleteUserById").Logger()
+	logger := s.logger.With().Str("service", "Delete").Logger()
 
 	err := s.rwdbOperation.DeleteUserById(ctx, logger, userId)
 	if err != nil {
@@ -51,7 +51,7 @@ func (s *Service) DeleteUserById(ctx context.Context, userId string) error {
 }
 
 func (s *Service) ApproveUser(ctx context.Context, email string) (*int64, error) {
-	logger := s.logger.With().Str("service", "ApproveUser").Logger()
+	logger := s.logger.With().Str("service", "Approve").Logger()
 	saga := saga.New()
 
 	user, err := s.redisDB.GetTempUser(ctx, logger, email, s.appConfig)

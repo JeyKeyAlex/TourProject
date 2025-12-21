@@ -6,6 +6,7 @@ import (
 	"errors"
 	"github.com/go-chi/chi/v5"
 	"net/http"
+	"strconv"
 
 	"github.com/JeyKeyAlex/TourProject/internal/entities"
 )
@@ -25,10 +26,15 @@ func decodeCreateUserRequest(_ context.Context, r *http.Request) (interface{}, e
 }
 
 func decodeGetUserByIdRequest(_ context.Context, r *http.Request) (interface{}, error) {
-	var userId string
 
-	if userId = chi.URLParam(r, "id"); userId == "" {
+	id := chi.URLParam(r, "id")
+	if id == "" {
 		return nil, errors.New("missing user id")
+	}
+
+	userId, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return nil, errors.New("failed to parse user_id")
 	}
 
 	return userId, nil
