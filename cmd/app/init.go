@@ -73,7 +73,6 @@ func initHTTPRouter() *chi.Mux {
 
 	r.Use(middleware.NoCache)
 	r.Use(middleware.RealIP)
-	r.Use(middleware.RequestID)
 	r.Use(custumMiddlware.RequestID)
 	r.Use(middleware.Recoverer)
 	r.Use(middleware.StripSlashes)

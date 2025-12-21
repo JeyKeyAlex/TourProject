@@ -20,11 +20,9 @@ type dbp struct {
 	config *config.DBConfig
 }
 
-type RWDBOperation dbp
-
-// NewRWDBOperationer creates a new database instance
-func NewRWDBOperationer(pool *pgxpool.Pool, config *config.DBConfig) *RWDBOperation {
-	return &RWDBOperation{
+// New creates a new database instance
+func New(pool *pgxpool.Pool, config *config.DBConfig) RWDBOperationer {
+	return &dbp{
 		db:     pool,
 		config: config,
 	}

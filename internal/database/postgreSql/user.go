@@ -8,7 +8,7 @@ import (
 	"github.com/rs/zerolog"
 )
 
-func (db *RWDBOperation) GetUserList(ctx context.Context, logger zerolog.Logger) (*entities.GetUserListResponse, error) {
+func (db *dbp) GetUserList(ctx context.Context, logger zerolog.Logger) (*entities.GetUserListResponse, error) {
 	timeout, cancel := context.WithTimeout(ctx, db.config.MaxIdleConnectionTimeout)
 	defer cancel()
 
@@ -57,7 +57,7 @@ func (db *RWDBOperation) GetUserList(ctx context.Context, logger zerolog.Logger)
 	return resp, nil
 }
 
-func (db *RWDBOperation) ApproveUser(ctx context.Context, logger zerolog.Logger, req *entities.CreateUserRequest) (*int64, error) {
+func (db *dbp) ApproveUser(ctx context.Context, logger zerolog.Logger, req *entities.CreateUserRequest) (*int64, error) {
 	timeout, cancel := context.WithTimeout(ctx, db.config.MaxIdleConnectionTimeout)
 	defer cancel()
 
@@ -80,7 +80,7 @@ func (db *RWDBOperation) ApproveUser(ctx context.Context, logger zerolog.Logger,
 	return &id, nil
 }
 
-func (db *RWDBOperation) GetUserById(ctx context.Context, logger zerolog.Logger, userId string) (*entities.User, error) {
+func (db *dbp) GetUserById(ctx context.Context, logger zerolog.Logger, userId string) (*entities.User, error) {
 	timeout, cancel := context.WithTimeout(ctx, db.config.MaxIdleConnectionTimeout)
 	defer cancel()
 
@@ -104,7 +104,7 @@ func (db *RWDBOperation) GetUserById(ctx context.Context, logger zerolog.Logger,
 	return &user, nil
 }
 
-func (db *RWDBOperation) DeleteUserById(ctx context.Context, logger zerolog.Logger, userId string) error {
+func (db *dbp) DeleteUserById(ctx context.Context, logger zerolog.Logger, userId string) error {
 	timeout, cancel := context.WithTimeout(ctx, db.config.MaxIdleConnectionTimeout)
 	defer cancel()
 

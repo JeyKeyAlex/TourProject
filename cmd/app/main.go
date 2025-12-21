@@ -70,7 +70,7 @@ func main() {
 	}
 	defer rwdb.Close()
 
-	RWDBOperationer := postgreSql.NewRWDBOperationer(rwdb, &appConfig.RWDB)
+	rwDb := postgreSql.New(rwdb, &appConfig.RWDB)
 
 	rds, err := initRedisConnection(appConfig)
 	if err != nil {
@@ -87,7 +87,7 @@ func main() {
 
 	redisDB, err := redis.New(rds)
 
-	serviceEndpoints := initEndpoints(RWDBOperationer, redisDB, &netLogger, appConfig)
+	serviceEndpoints := initEndpoints(rwDb, redisDB, &netLogger, appConfig)
 
 	// TODO init client (grpc, http, smtp,...)
 	// TODO init messenger broker (Kafka, Rabbit, Nats)
@@ -114,26 +114,23 @@ func runApp(httpServer *http.Server, listenErr chan error, coreLogger zerolog.Lo
 	signal.Notify(shutdownCh, os.Interrupt, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
 
 	var err error
-	var runningApp = true
 
-	for runningApp {
+	for {
 		select {
-		// handle error channel
 		case err = <-listenErr:
 			if err != nil {
 				coreLogger.Error().Err(err).Msg("received listener error")
 				shutdownCh <- os.Kill
 			}
-		// handle os system signal
 		case sig := <-shutdownCh:
 			coreLogger.Info().Msgf("received shutdown signal: %v", sig)
 			ctxTimeout, timeoutCancelFunc := context.WithTimeout(context.Background(), 10*time.Second)
 			err = httpServer.Shutdown(ctxTimeout) // may return ErrServerClosed
-			defer timeoutCancelFunc()
-			if err != nil {
+			timeoutCancelFunc()
+			if err != nil && err != http.ErrServerClosed {
 				coreLogger.Error().Err(err).Msg("received shutdown error")
 			}
-			runningApp = false
+			return
 		}
 	}
 }

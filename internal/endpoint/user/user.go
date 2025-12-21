@@ -5,6 +5,7 @@ import (
 	"errors"
 	"github.com/JeyKeyAlex/TourProject/internal/entities"
 	userSrv "github.com/JeyKeyAlex/TourProject/internal/service/user"
+	"github.com/JeyKeyAlex/TourProject/internal/transport/http/middleware"
 	pkgErr "github.com/JeyKeyAlex/TourProject/pkg/errors"
 	"github.com/JeyKeyAlex/TourProject/pkg/helpers/validate"
 	"github.com/go-kit/kit/endpoint"
@@ -14,7 +15,8 @@ import (
 
 func makeGetUserList(s userSrv.IService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
-		serviceLogger := s.GetLogger().With().Str("func", "makeGetUserList").Logger()
+		reqID, ctx := middleware.GetRequestID(ctx)
+		serviceLogger := s.GetLogger().With().Str("func", "makeGetUserList").Str("request_id", reqID).Logger()
 		serviceLogger.Info().Msg("calling s.getUserList")
 
 		resp, err := s.GetUserList(ctx)
@@ -28,7 +30,8 @@ func makeGetUserList(s userSrv.IService) endpoint.Endpoint {
 
 func makeCreateUser(s userSrv.IService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
-		serviceLogger := s.GetLogger().With().Str("func", "makeCreateUser").Logger()
+		reqID, ctx := middleware.GetRequestID(ctx)
+		serviceLogger := s.GetLogger().With().Str("func", "makeCreateUser").Str("request_id", reqID).Logger()
 		serviceLogger.Info().Msg("calling s.createUser")
 
 		req, err := validate.CastRequest[*entities.CreateUserRequest](request)
@@ -48,7 +51,8 @@ func makeCreateUser(s userSrv.IService) endpoint.Endpoint {
 
 func makeApproveUser(s userSrv.IService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
-		serviceLogger := s.GetLogger().With().Str("func", "makeApproveUser").Logger()
+		reqID, ctx := middleware.GetRequestID(ctx)
+		serviceLogger := s.GetLogger().With().Str("func", "makeApproveUser").Str("request_id", reqID).Logger()
 		serviceLogger.Info().Msg("calling s.makeApproveUser")
 
 		email, ok := request.(string)
@@ -69,7 +73,8 @@ func makeApproveUser(s userSrv.IService) endpoint.Endpoint {
 
 func makeGetUserById(s userSrv.IService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
-		serviceLogger := s.GetLogger().With().Str("func", "makeGetUserById").Logger()
+		reqID, ctx := middleware.GetRequestID(ctx)
+		serviceLogger := s.GetLogger().With().Str("func", "makeGetUserById").Str("request_id", reqID).Logger()
 		serviceLogger.Info().Msg("calling s.GetUserById")
 
 		userId, ok := request.(string)
@@ -90,7 +95,8 @@ func makeGetUserById(s userSrv.IService) endpoint.Endpoint {
 
 func makeDeleteUserById(s userSrv.IService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
-		serviceLogger := s.GetLogger().With().Str("func", "makeDeleteUserById").Logger()
+		reqID, ctx := middleware.GetRequestID(ctx)
+		serviceLogger := s.GetLogger().With().Str("func", "makeDeleteUserById").Str("request_id", reqID).Logger()
 		serviceLogger.Info().Msg("calling s.DeleteUserById")
 
 		userId, ok := request.(string)
