@@ -26,6 +26,6 @@ func NewServer(endpoints user.Endpoints, serverOptions []kitgrpc.ServerOption) p
 		approve:     kitgrpc.NewServer(endpoints.Approve, common.DecodeRequest, common.EncodeResponse, serverOptions...),
 		delete:      kitgrpc.NewServer(endpoints.Delete, common.DecodeRequest, common.EncodeResponse, serverOptions...),
 		getUserList: kitgrpc.NewServer(endpoints.GetUserList, common.DecodeRequest, common.EncodeResponse, serverOptions...),
-		getUserById: kitgrpc.NewServer(endpoints.GetUserById, common.DecodeIdRequest, common.EncodeResponse, serverOptions...),
+		getUserById: kitgrpc.NewServer(endpoints.GetUserById, common.DecodeRequest, common.EncodeResponse, serverOptions...),
 	}
 }

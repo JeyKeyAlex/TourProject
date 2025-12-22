@@ -1,6 +1,7 @@
 package main
 
 import (
+	"buf.build/go/protovalidate"
 	"context"
 	"github.com/rs/zerolog"
 	"net"
@@ -65,10 +66,11 @@ func DBinit(connectionString string) (*pgxpool.Pool, error) {
 func initEndpoints(
 	rwdbOperationer postgreSql.RWDBOperationer,
 	redisDB redis.Redis,
+	validator protovalidate.Validator,
 	logger *zerolog.Logger,
 	appConfig *config.Configuration,
 ) endpoint.ServiceEndpoints {
-	userSrv := srvUser.NewService(rwdbOperationer, redisDB, logger, appConfig)
+	userSrv := srvUser.NewService(rwdbOperationer, redisDB, validator, logger, appConfig)
 	return endpoint.ServiceEndpoints{
 		UserEP: userEp.MakeEndpoints(userSrv),
 	}

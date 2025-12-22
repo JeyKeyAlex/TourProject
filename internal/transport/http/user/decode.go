@@ -9,6 +9,8 @@ import (
 	"strconv"
 
 	"github.com/JeyKeyAlex/TourProject/internal/entities"
+
+	pb "github.com/JeyKeyAlex/TourProject-proto/go-genproto/user"
 )
 
 func decodeEmptyRequest(_ context.Context, _ *http.Request) (interface{}, error) {
@@ -26,6 +28,7 @@ func decodeCreateUserRequest(_ context.Context, r *http.Request) (interface{}, e
 }
 
 func decodeGetUserByIdRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	req := pb.Id{}
 
 	id := chi.URLParam(r, "id")
 	if id == "" {
@@ -37,7 +40,9 @@ func decodeGetUserByIdRequest(_ context.Context, r *http.Request) (interface{}, 
 		return nil, errors.New("failed to parse user_id")
 	}
 
-	return userId, nil
+	req.Id = userId
+
+	return req, nil
 }
 
 func decodeApproveUserRequest(_ context.Context, r *http.Request) (interface{}, error) {

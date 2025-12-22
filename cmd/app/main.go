@@ -18,6 +18,8 @@ import (
 	goRedis "github.com/redis/go-redis/v9"
 	"github.com/rs/zerolog"
 	"google.golang.org/grpc"
+
+	"buf.build/go/protovalidate"
 )
 
 func main() {
@@ -88,7 +90,8 @@ func main() {
 
 	redisDB, err := redis.New(rds)
 
-	serviceEndpoints := initEndpoints(rwDb, redisDB, &netLogger, appConfig)
+	validator, err := protovalidate.New()
+	serviceEndpoints := initEndpoints(rwDb, redisDB, validator, &netLogger, appConfig)
 
 	// TODO init client (grpc, http, smtp,...)
 	// TODO init messenger broker (Kafka, Rabbit, Nats)

@@ -104,7 +104,7 @@ func (db *dbp) GetUserById(ctx context.Context, logger zerolog.Logger, userId in
 	return &user, nil
 }
 
-func (db *dbp) DeleteUserById(ctx context.Context, logger zerolog.Logger, userId string) error {
+func (db *dbp) DeleteUserById(ctx context.Context, logger zerolog.Logger, userId int64) error {
 	timeout, cancel := context.WithTimeout(ctx, db.config.MaxIdleConnectionTimeout)
 	defer cancel()
 

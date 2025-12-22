@@ -2,7 +2,6 @@ package user
 
 import (
 	"context"
-	"strconv"
 
 	"github.com/JeyKeyAlex/TourProject/internal/entities"
 	"github.com/JeyKeyAlex/TourProject/pkg/helpers/saga"
@@ -39,7 +38,7 @@ func (s *Service) GetUserById(ctx context.Context, userId int64) (*entities.User
 	return user, nil
 }
 
-func (s *Service) DeleteUserById(ctx context.Context, userId string) error {
+func (s *Service) DeleteUserById(ctx context.Context, userId int64) error {
 	logger := s.logger.With().Str("service", "Delete").Logger()
 
 	err := s.rwdbOperation.DeleteUserById(ctx, logger, userId)
@@ -65,8 +64,7 @@ func (s *Service) ApproveUser(ctx context.Context, email string) (*int64, error)
 	}
 
 	saga.AddRollbackFunc(func() error {
-		userId := strconv.FormatInt(*id, 10)
-		return s.rwdbOperation.DeleteUserById(ctx, logger, userId)
+		return s.rwdbOperation.DeleteUserById(ctx, logger, *id)
 	})
 
 	err = s.redisDB.DeleteUser(ctx, logger, email, s.appConfig)

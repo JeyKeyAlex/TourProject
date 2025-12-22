@@ -3,14 +3,17 @@ package user
 import (
 	"context"
 	"errors"
-	"github.com/JeyKeyAlex/TourProject/internal/entities"
+	"github.com/JeyKeyAlex/TourProject/internal/convert"
+
 	userSrv "github.com/JeyKeyAlex/TourProject/internal/service/user"
 	"github.com/JeyKeyAlex/TourProject/internal/transport/http/middleware"
+	"github.com/JeyKeyAlex/TourProject/pkg/error_templates"
 	pkgErr "github.com/JeyKeyAlex/TourProject/pkg/errors"
 	"github.com/JeyKeyAlex/TourProject/pkg/helpers/validate"
+
 	"github.com/go-kit/kit/endpoint"
 
-	"github.com/JeyKeyAlex/TourProject/pkg/error_templates"
+	pb "github.com/JeyKeyAlex/TourProject-proto/go-genproto/user"
 )
 
 func makeGetUserList(s userSrv.IService) endpoint.Endpoint {
@@ -34,16 +37,16 @@ func makeCreateUser(s userSrv.IService) endpoint.Endpoint {
 		serviceLogger := s.GetLogger().With().Str("func", "makeCreateUser").Str("request_id", reqID).Logger()
 		serviceLogger.Info().Msg("calling s.createUser")
 
-		req, err := validate.CastRequest[*entities.CreateUserRequest](request)
-		if err != nil {
-			serviceLogger.Error().Stack().Err(error_templates.ErrorDetailFromError(err)).Msg(pkgErr.FailedCastRequest)
-			return nil, err
-		}
-
-		err = s.CreateUser(ctx, req)
-		if err != nil {
-			return nil, err
-		}
+		//req, err := validate.CastValidateRequest[*pb.CreateUserRequest](s.GetValidator(), request)
+		//if err != nil {
+		//	serviceLogger.Error().Stack().Err(error_templates.ErrorDetailFromError(err)).Msg(pkgErr.FailedCastRequest)
+		//	return nil, err
+		//}
+		//
+		//err = s.CreateUser(ctx, req)
+		//if err != nil {
+		//	return nil, err
+		//}
 
 		return nil, nil
 	}
@@ -77,19 +80,25 @@ func makeGetUserById(s userSrv.IService) endpoint.Endpoint {
 		serviceLogger := s.GetLogger().With().Str("func", "makeGetUserById").Str("request_id", reqID).Logger()
 		serviceLogger.Info().Msg("calling s.GetUserById")
 
-		userId, ok := request.(int64)
-		if !ok {
-			err := errors.New("userid must be int64")
+		req, err := validate.CastValidateRequest[*pb.Id](s.GetValidator(), request)
+		if err != nil {
 			serviceLogger.Error().Stack().Err(error_templates.ErrorDetailFromError(err)).Msg(pkgErr.FailedCastRequest)
 			return nil, err
 		}
 
-		user, err := s.GetUserById(ctx, userId)
+		user, err := s.GetUserById(ctx, req.Id)
 		if err != nil {
 			return nil, err
 		}
 
-		return &user, nil
+		protoUser, err := convert.GetUserEntityToEntry(user)
+		if err != nil {
+			return nil, err
+		}
+
+		return &pb.GetUserByIdResponse{
+			User: protoUser,
+		}, nil
 	}
 }
 
@@ -99,14 +108,13 @@ func makeDeleteUserById(s userSrv.IService) endpoint.Endpoint {
 		serviceLogger := s.GetLogger().With().Str("func", "makeDeleteUserById").Str("request_id", reqID).Logger()
 		serviceLogger.Info().Msg("calling s.Delete")
 
-		userId, ok := request.(string)
-		if !ok {
-			err := errors.New("userid must be a string")
+		req, err := validate.CastValidateRequest[*pb.Id](s.GetValidator(), request)
+		if err != nil {
 			serviceLogger.Error().Stack().Err(error_templates.ErrorDetailFromError(err)).Msg(pkgErr.FailedCastRequest)
 			return nil, err
 		}
 
-		err := s.DeleteUserById(ctx, userId)
+		err = s.DeleteUserById(ctx, req.Id)
 		if err != nil {
 			return nil, err
 		}
