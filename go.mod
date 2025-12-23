@@ -6,7 +6,7 @@ toolchain go1.24.4
 
 require (
 	buf.build/go/protovalidate v1.1.0
-	github.com/JeyKeyAlex/TourProject-proto v0.0.0-20251221125434-4f8e8a0f0fde
+	github.com/JeyKeyAlex/TourProject-proto v0.0.0-00010101000000-000000000000
 	github.com/go-chi/chi/v5 v5.2.3
 	github.com/go-kit/kit v0.13.0
 	github.com/google/uuid v1.6.0

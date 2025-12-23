@@ -37,7 +37,7 @@ func makeCreateUser(s userSrv.IService) endpoint.Endpoint {
 		serviceLogger := s.GetLogger().With().Str("func", "makeCreateUser").Str("request_id", reqID).Logger()
 		serviceLogger.Info().Msg("calling s.createUser")
 
-		//req, err := validate.CastValidateRequest[*pb.CreateUserRequest](s.GetValidator(), request)
+		//req, err := validate.CastValidateRequest[*pb.CreateRequest](s.GetValidator(), request)
 		//if err != nil {
 		//	serviceLogger.Error().Stack().Err(error_templates.ErrorDetailFromError(err)).Msg(pkgErr.FailedCastRequest)
 		//	return nil, err
@@ -80,7 +80,7 @@ func makeGetUserById(s userSrv.IService) endpoint.Endpoint {
 		serviceLogger := s.GetLogger().With().Str("func", "makeGetUserById").Str("request_id", reqID).Logger()
 		serviceLogger.Info().Msg("calling s.GetUserById")
 
-		req, err := validate.CastValidateRequest[*pb.Id](s.GetValidator(), request)
+		req, err := validate.CastValidateRequest[*pb.IdMessage](s.GetValidator(), request)
 		if err != nil {
 			serviceLogger.Error().Stack().Err(error_templates.ErrorDetailFromError(err)).Msg(pkgErr.FailedCastRequest)
 			return nil, err
@@ -96,7 +96,7 @@ func makeGetUserById(s userSrv.IService) endpoint.Endpoint {
 			return nil, err
 		}
 
-		return &pb.GetUserByIdResponse{
+		return &pb.GetResponse{
 			User: protoUser,
 		}, nil
 	}
@@ -108,7 +108,7 @@ func makeDeleteUserById(s userSrv.IService) endpoint.Endpoint {
 		serviceLogger := s.GetLogger().With().Str("func", "makeDeleteUserById").Str("request_id", reqID).Logger()
 		serviceLogger.Info().Msg("calling s.Delete")
 
-		req, err := validate.CastValidateRequest[*pb.Id](s.GetValidator(), request)
+		req, err := validate.CastValidateRequest[*pb.IdMessage](s.GetValidator(), request)
 		if err != nil {
 			serviceLogger.Error().Stack().Err(error_templates.ErrorDetailFromError(err)).Msg(pkgErr.FailedCastRequest)
 			return nil, err

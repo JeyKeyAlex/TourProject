@@ -87,6 +87,7 @@ func (db *dbp) GetUserById(ctx context.Context, logger zerolog.Logger, userId in
 	var user entities.User
 
 	err := db.db.QueryRow(timeout, queryGetUserById, userId).Scan(
+		&user.Id,
 		&user.Name,
 		&user.LastName,
 		&user.MiddleName,

@@ -9,6 +9,7 @@ import (
 func GetUserEntityToEntry(eResp *entities.User) (*pb.User, error) {
 	user := &pb.User{}
 
+	user.Id = eResp.Id
 	user.Name = eResp.Name
 	user.LastName = eResp.LastName
 	user.MiddleName = eResp.MiddleName

@@ -7,7 +7,7 @@ type GetUserListResponse struct {
 	Users []User `json:"users"`
 }
 type User struct {
-	Id          int        `db:"id" json:"id,omitempty"`
+	Id          int64      `db:"id" json:"id,omitempty"`
 	Name        string     `db:"name" json:"name,omitempty"`
 	LastName    string     `db:"last_name" json:"last_name,omitempty"`
 	MiddleName  *string    `db:"middle_name" json:"middle_name,omitempty"`

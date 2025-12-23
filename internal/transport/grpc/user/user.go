@@ -12,7 +12,7 @@ import (
 	pb "github.com/JeyKeyAlex/TourProject-proto/go-genproto/user"
 )
 
-func (s *RPCServer) Create(ctx context.Context, req *pb.CreateUserRequest) (*emptypb.Empty, error) {
+func (s *RPCServer) CreateUser(ctx context.Context, req *pb.CreateRequest) (*emptypb.Empty, error) {
 	_, resp, err := s.create.ServeGRPC(ctx, req)
 	if err != nil {
 		var outputError *error_templates.OutputError
@@ -25,7 +25,7 @@ func (s *RPCServer) Create(ctx context.Context, req *pb.CreateUserRequest) (*emp
 	return resp.(*emptypb.Empty), nil
 }
 
-func (s *RPCServer) ApproveUser(ctx context.Context, req *pb.ApproveUserRequest) (*pb.Id, error) {
+func (s *RPCServer) ApproveUser(ctx context.Context, req *pb.ApproveRequest) (*pb.IdMessage, error) {
 	_, resp, err := s.approve.ServeGRPC(ctx, req)
 	if err != nil {
 		var outputError *error_templates.OutputError
@@ -35,10 +35,10 @@ func (s *RPCServer) ApproveUser(ctx context.Context, req *pb.ApproveUserRequest)
 			return nil, error_templates.New(err.Error(), err, codes.Unknown, http.StatusInternalServerError).GetGRPC()
 		}
 	}
-	return resp.(*pb.Id), nil
+	return resp.(*pb.IdMessage), nil
 }
 
-func (s *RPCServer) DeleteUserById(ctx context.Context, req *pb.Id) (*emptypb.Empty, error) {
+func (s *RPCServer) Delete(ctx context.Context, req *pb.IdMessage) (*emptypb.Empty, error) {
 	_, resp, err := s.delete.ServeGRPC(ctx, req)
 	if err != nil {
 		var outputError *error_templates.OutputError
@@ -51,8 +51,8 @@ func (s *RPCServer) DeleteUserById(ctx context.Context, req *pb.Id) (*emptypb.Em
 	return resp.(*emptypb.Empty), nil
 }
 
-func (s *RPCServer) GetUserList(ctx context.Context, req *emptypb.Empty) (*pb.GetUserListResponse, error) {
-	_, resp, err := s.getUserList.ServeGRPC(ctx, req)
+func (s *RPCServer) GetList(ctx context.Context, req *emptypb.Empty) (*pb.GetListResponse, error) {
+	_, resp, err := s.getList.ServeGRPC(ctx, req)
 	if err != nil {
 		var outputError *error_templates.OutputError
 		if errors.As(err, &outputError) {
@@ -61,11 +61,11 @@ func (s *RPCServer) GetUserList(ctx context.Context, req *emptypb.Empty) (*pb.Ge
 			return nil, error_templates.New(err.Error(), err, codes.Unknown, http.StatusInternalServerError).GetGRPC()
 		}
 	}
-	return resp.(*pb.GetUserListResponse), nil
+	return resp.(*pb.GetListResponse), nil
 }
 
-func (s *RPCServer) GetUserById(ctx context.Context, req *pb.Id) (*pb.GetUserByIdResponse, error) {
-	_, resp, err := s.getUserById.ServeGRPC(ctx, req)
+func (s *RPCServer) Get(ctx context.Context, req *pb.IdMessage) (*pb.GetResponse, error) {
+	_, resp, err := s.get.ServeGRPC(ctx, req)
 	if err != nil {
 		var outputError *error_templates.OutputError
 		if errors.As(err, &outputError) {
@@ -74,5 +74,5 @@ func (s *RPCServer) GetUserById(ctx context.Context, req *pb.Id) (*pb.GetUserByI
 			return nil, error_templates.New(err.Error(), err, codes.Unknown, http.StatusInternalServerError).GetGRPC()
 		}
 	}
-	return resp.(*pb.GetUserByIdResponse), nil
+	return resp.(*pb.GetResponse), nil
 }

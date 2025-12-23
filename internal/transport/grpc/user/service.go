@@ -10,11 +10,11 @@ import (
 )
 
 type RPCServer struct {
-	create      kitgrpc.Handler
-	approve     kitgrpc.Handler
-	delete      kitgrpc.Handler
-	getUserList kitgrpc.Handler
-	getUserById kitgrpc.Handler
+	create  kitgrpc.Handler
+	approve kitgrpc.Handler
+	delete  kitgrpc.Handler
+	getList kitgrpc.Handler
+	get     kitgrpc.Handler
 
 	pb.UnimplementedUserServiceServer
 }
@@ -22,10 +22,10 @@ type RPCServer struct {
 // NewServer is a constructor for creating a new instance of a gRPC server(RPCServer structure).
 func NewServer(endpoints user.Endpoints, serverOptions []kitgrpc.ServerOption) pb.UserServiceServer {
 	return &RPCServer{
-		create:      kitgrpc.NewServer(endpoints.Create, common.DecodeRequest, common.EncodeResponse, serverOptions...),
-		approve:     kitgrpc.NewServer(endpoints.Approve, common.DecodeRequest, common.EncodeResponse, serverOptions...),
-		delete:      kitgrpc.NewServer(endpoints.Delete, common.DecodeRequest, common.EncodeResponse, serverOptions...),
-		getUserList: kitgrpc.NewServer(endpoints.GetUserList, common.DecodeRequest, common.EncodeResponse, serverOptions...),
-		getUserById: kitgrpc.NewServer(endpoints.GetUserById, common.DecodeRequest, common.EncodeResponse, serverOptions...),
+		create:  kitgrpc.NewServer(endpoints.Create, common.DecodeRequest, common.EncodeResponse, serverOptions...),
+		approve: kitgrpc.NewServer(endpoints.Approve, common.DecodeRequest, common.EncodeResponse, serverOptions...),
+		delete:  kitgrpc.NewServer(endpoints.Delete, common.DecodeRequest, common.EncodeResponse, serverOptions...),
+		getList: kitgrpc.NewServer(endpoints.GetUserList, common.DecodeRequest, common.EncodeResponse, serverOptions...),
+		get:     kitgrpc.NewServer(endpoints.GetUserById, common.DecodeRequest, common.EncodeResponse, serverOptions...),
 	}
 }

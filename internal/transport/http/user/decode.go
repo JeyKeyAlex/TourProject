@@ -28,7 +28,7 @@ func decodeCreateUserRequest(_ context.Context, r *http.Request) (interface{}, e
 }
 
 func decodeGetUserByIdRequest(_ context.Context, r *http.Request) (interface{}, error) {
-	req := pb.Id{}
+	req := pb.IdMessage{}
 
 	id := chi.URLParam(r, "id")
 	if id == "" {

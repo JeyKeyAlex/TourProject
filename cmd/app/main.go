@@ -67,7 +67,7 @@ func main() {
 
 	rwdb, err := DBinit(appConfig.RWDB.ConnectionString)
 	if err != nil {
-		panic(err)
+		coreLogger.Fatal().Err(err).Msg("failed to establish a connection with the Read/Write database")
 	} else {
 		coreLogger.Info().Msg("database initialization started")
 	}
