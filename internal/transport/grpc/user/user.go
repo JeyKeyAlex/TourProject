@@ -12,7 +12,7 @@ import (
 	pb "github.com/JeyKeyAlex/TourProject-proto/go-genproto/user"
 )
 
-func (s *RPCServer) CreateUser(ctx context.Context, req *pb.CreateRequest) (*emptypb.Empty, error) {
+func (s *RPCServer) Create(ctx context.Context, req *pb.CreateRequest) (*emptypb.Empty, error) {
 	_, resp, err := s.create.ServeGRPC(ctx, req)
 	if err != nil {
 		var outputError *error_templates.OutputError
@@ -25,7 +25,7 @@ func (s *RPCServer) CreateUser(ctx context.Context, req *pb.CreateRequest) (*emp
 	return resp.(*emptypb.Empty), nil
 }
 
-func (s *RPCServer) ApproveUser(ctx context.Context, req *pb.ApproveRequest) (*pb.IdMessage, error) {
+func (s *RPCServer) Approve(ctx context.Context, req *pb.ApproveRequest) (*pb.IdMessage, error) {
 	_, resp, err := s.approve.ServeGRPC(ctx, req)
 	if err != nil {
 		var outputError *error_templates.OutputError
