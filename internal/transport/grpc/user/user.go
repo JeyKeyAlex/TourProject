@@ -12,7 +12,7 @@ import (
 	pb "github.com/JeyKeyAlex/TourProject-proto/go-genproto/user"
 )
 
-func (s *RPCServer) Create(ctx context.Context, req *pb.CreateRequest) (*emptypb.Empty, error) {
+func (s *RPCServer) Create(ctx context.Context, req *pb.CreateUserRequest) (*emptypb.Empty, error) {
 	_, resp, err := s.create.ServeGRPC(ctx, req)
 	if err != nil {
 		var outputError *error_templates.OutputError
@@ -25,8 +25,21 @@ func (s *RPCServer) Create(ctx context.Context, req *pb.CreateRequest) (*emptypb
 	return resp.(*emptypb.Empty), nil
 }
 
-func (s *RPCServer) Approve(ctx context.Context, req *pb.ApproveRequest) (*pb.IdMessage, error) {
+func (s *RPCServer) Approve(ctx context.Context, req *pb.ApproveUserRequest) (*pb.IdMessage, error) {
 	_, resp, err := s.approve.ServeGRPC(ctx, req)
+	if err != nil {
+		var outputError *error_templates.OutputError
+		if errors.As(err, &outputError) {
+			return nil, outputError.GetGRPC()
+		} else {
+			return nil, error_templates.New(err.Error(), err, codes.Unknown, http.StatusInternalServerError).GetGRPC()
+		}
+	}
+	return resp.(*pb.IdMessage), nil
+}
+
+func (s *RPCServer) Update(ctx context.Context, req *pb.UpdateUserRequest) (*pb.IdMessage, error) {
+	_, resp, err := s.update.ServeGRPC(ctx, req)
 	if err != nil {
 		var outputError *error_templates.OutputError
 		if errors.As(err, &outputError) {
@@ -51,8 +64,8 @@ func (s *RPCServer) Delete(ctx context.Context, req *pb.IdMessage) (*emptypb.Emp
 	return resp.(*emptypb.Empty), nil
 }
 
-func (s *RPCServer) GetList(ctx context.Context, req *emptypb.Empty) (*pb.GetListResponse, error) {
-	_, resp, err := s.getList.ServeGRPC(ctx, req)
+func (s *RPCServer) GetUser(ctx context.Context, req *pb.IdMessage) (*pb.GetUserResponse, error) {
+	_, resp, err := s.getUser.ServeGRPC(ctx, req)
 	if err != nil {
 		var outputError *error_templates.OutputError
 		if errors.As(err, &outputError) {
@@ -61,11 +74,11 @@ func (s *RPCServer) GetList(ctx context.Context, req *emptypb.Empty) (*pb.GetLis
 			return nil, error_templates.New(err.Error(), err, codes.Unknown, http.StatusInternalServerError).GetGRPC()
 		}
 	}
-	return resp.(*pb.GetListResponse), nil
+	return resp.(*pb.GetUserResponse), nil
 }
 
-func (s *RPCServer) Get(ctx context.Context, req *pb.IdMessage) (*pb.GetResponse, error) {
-	_, resp, err := s.get.ServeGRPC(ctx, req)
+func (s *RPCServer) GetUserList(ctx context.Context, req *emptypb.Empty) (*pb.GetUserListResponse, error) {
+	_, resp, err := s.getUserList.ServeGRPC(ctx, req)
 	if err != nil {
 		var outputError *error_templates.OutputError
 		if errors.As(err, &outputError) {
@@ -74,5 +87,5 @@ func (s *RPCServer) Get(ctx context.Context, req *pb.IdMessage) (*pb.GetResponse
 			return nil, error_templates.New(err.Error(), err, codes.Unknown, http.StatusInternalServerError).GetGRPC()
 		}
 	}
-	return resp.(*pb.GetResponse), nil
+	return resp.(*pb.GetUserListResponse), nil
 }

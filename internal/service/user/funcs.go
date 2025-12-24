@@ -28,7 +28,7 @@ func (s *Service) CreateUser(ctx context.Context, req *entities.CreateUserReques
 }
 
 func (s *Service) GetUserById(ctx context.Context, userId int64) (*entities.User, error) {
-	logger := s.logger.With().Str("service", "GetUserById").Logger()
+	logger := s.logger.With().Str("service", "GetUser").Logger()
 
 	user, err := s.rwdbOperation.GetUserById(ctx, logger, userId)
 	if err != nil {

@@ -44,3 +44,5 @@ require (
 	google.golang.org/genproto/googleapis/api v0.0.0-20251213004720-97cd9d5aeac2 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20251124214823-79d6a2a48846 // indirect
 )
+
+replace github.com/JeyKeyAlex/TourProject-proto => ../TestProject-proto

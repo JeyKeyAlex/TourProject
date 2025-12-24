@@ -97,8 +97,8 @@ func (db *dbp) GetUserById(ctx context.Context, logger zerolog.Logger, userId in
 		&user.CreatedAt,
 	)
 	if err != nil {
-		err = errors.New("failed to scan in GetUserById: " + err.Error())
-		logger.Error().Err(err).Msg("failed to GetUserById")
+		err = errors.New("failed to scan in GetUser: " + err.Error())
+		logger.Error().Err(err).Msg("failed to GetUser")
 		return nil, err
 	}
 

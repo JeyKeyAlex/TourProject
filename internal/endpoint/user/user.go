@@ -31,10 +31,10 @@ func makeGetUserList(s userSrv.IService) endpoint.Endpoint {
 	}
 }
 
-func makeCreateUser(s userSrv.IService) endpoint.Endpoint {
+func makeCreate(s userSrv.IService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		reqID, ctx := middleware.GetRequestID(ctx)
-		serviceLogger := s.GetLogger().With().Str("func", "makeCreateUser").Str("request_id", reqID).Logger()
+		serviceLogger := s.GetLogger().With().Str("func", "makeCreate").Str("request_id", reqID).Logger()
 		serviceLogger.Info().Msg("calling s.createUser")
 
 		//req, err := validate.CastValidateRequest[*pb.CreateRequest](s.GetValidator(), request)
@@ -52,11 +52,11 @@ func makeCreateUser(s userSrv.IService) endpoint.Endpoint {
 	}
 }
 
-func makeApproveUser(s userSrv.IService) endpoint.Endpoint {
+func makeApprove(s userSrv.IService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		reqID, ctx := middleware.GetRequestID(ctx)
-		serviceLogger := s.GetLogger().With().Str("func", "makeApproveUser").Str("request_id", reqID).Logger()
-		serviceLogger.Info().Msg("calling s.makeApproveUser")
+		serviceLogger := s.GetLogger().With().Str("func", "makeApprove").Str("request_id", reqID).Logger()
+		serviceLogger.Info().Msg("calling s.makeApprove")
 
 		email, ok := request.(string)
 		if !ok {
@@ -74,11 +74,11 @@ func makeApproveUser(s userSrv.IService) endpoint.Endpoint {
 	}
 }
 
-func makeGetUserById(s userSrv.IService) endpoint.Endpoint {
+func makeGetUser(s userSrv.IService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		reqID, ctx := middleware.GetRequestID(ctx)
-		serviceLogger := s.GetLogger().With().Str("func", "makeGetUserById").Str("request_id", reqID).Logger()
-		serviceLogger.Info().Msg("calling s.GetUserById")
+		serviceLogger := s.GetLogger().With().Str("func", "makeGetUser").Str("request_id", reqID).Logger()
+		serviceLogger.Info().Msg("calling s.GetUser")
 
 		req, err := validate.CastValidateRequest[*pb.IdMessage](s.GetValidator(), request)
 		if err != nil {
@@ -96,16 +96,16 @@ func makeGetUserById(s userSrv.IService) endpoint.Endpoint {
 			return nil, err
 		}
 
-		return &pb.GetResponse{
+		return &pb.GetUserResponse{
 			User: protoUser,
 		}, nil
 	}
 }
 
-func makeDeleteUserById(s userSrv.IService) endpoint.Endpoint {
+func makeDelete(s userSrv.IService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		reqID, ctx := middleware.GetRequestID(ctx)
-		serviceLogger := s.GetLogger().With().Str("func", "makeDeleteUserById").Str("request_id", reqID).Logger()
+		serviceLogger := s.GetLogger().With().Str("func", "makeDelete").Str("request_id", reqID).Logger()
 		serviceLogger.Info().Msg("calling s.Delete")
 
 		req, err := validate.CastValidateRequest[*pb.IdMessage](s.GetValidator(), request)
