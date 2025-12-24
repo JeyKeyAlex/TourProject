@@ -6,7 +6,7 @@ toolchain go1.24.4
 
 require (
 	buf.build/go/protovalidate v1.1.0
-	github.com/JeyKeyAlex/TourProject-proto v0.0.0-20251223153915-4a14c37bca45
+	github.com/JeyKeyAlex/TourProject-proto v0.0.0-20251224154301-c2b738d21b4f
 	github.com/go-chi/chi/v5 v5.2.3
 	github.com/go-kit/kit v0.13.0
 	github.com/google/uuid v1.6.0
@@ -44,5 +44,3 @@ require (
 	google.golang.org/genproto/googleapis/api v0.0.0-20251213004720-97cd9d5aeac2 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20251124214823-79d6a2a48846 // indirect
 )
-
-replace github.com/JeyKeyAlex/TourProject-proto => ../TestProject-proto
