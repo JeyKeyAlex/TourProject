@@ -30,7 +30,7 @@ import (
 	custumMiddlware "github.com/JeyKeyAlex/TourProject/internal/transport/http/middleware"
 	tpHTTPUser "github.com/JeyKeyAlex/TourProject/internal/transport/http/user"
 
-	pbUser "github.com/JeyKeyAlex/TourProject-proto/go-genproto/user"
+	pbUser "github.com/JeyKeyAlex/TestProject-genproto/user"
 )
 
 func initRuntime(useCPUs, maxThreads int, logger *zerolog.Logger) {

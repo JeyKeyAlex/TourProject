@@ -3,7 +3,7 @@ package convert
 import (
 	"github.com/JeyKeyAlex/TourProject/internal/entities"
 
-	pb "github.com/JeyKeyAlex/TourProject-proto/go-genproto/user"
+	pb "github.com/JeyKeyAlex/TestProject-genproto/user"
 )
 
 func GetUserEntityToEntry(eResp *entities.User) (*pb.User, error) {

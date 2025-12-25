@@ -3,13 +3,14 @@ package user
 import (
 	"context"
 	"errors"
-	"github.com/JeyKeyAlex/TourProject/pkg/error_templates"
 	"net/http"
+
+	"github.com/JeyKeyAlex/TourProject/pkg/error_templates"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/protobuf/types/known/emptypb"
 
-	pb "github.com/JeyKeyAlex/TourProject-proto/go-genproto/user"
+	pb "github.com/JeyKeyAlex/TestProject-genproto/user"
 )
 
 func (s *RPCServer) Create(ctx context.Context, req *pb.CreateUserRequest) (*emptypb.Empty, error) {

@@ -6,7 +6,7 @@ import (
 
 	kitgrpc "github.com/go-kit/kit/transport/grpc"
 
-	pb "github.com/JeyKeyAlex/TourProject-proto/go-genproto/user"
+	pb "github.com/JeyKeyAlex/TestProject-genproto/user"
 )
 
 type RPCServer struct {

@@ -10,7 +10,7 @@ import (
 
 	"github.com/JeyKeyAlex/TourProject/internal/entities"
 
-	pb "github.com/JeyKeyAlex/TourProject-proto/go-genproto/user"
+	pb "github.com/JeyKeyAlex/TestProject-genproto/user"
 )
 
 func decodeEmptyRequest(_ context.Context, _ *http.Request) (interface{}, error) {

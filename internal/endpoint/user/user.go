@@ -13,7 +13,7 @@ import (
 
 	"github.com/go-kit/kit/endpoint"
 
-	pb "github.com/JeyKeyAlex/TourProject-proto/go-genproto/user"
+	pb "github.com/JeyKeyAlex/TestProject-genproto/user"
 )
 
 func makeGetUserList(s userSrv.IService) endpoint.Endpoint {
