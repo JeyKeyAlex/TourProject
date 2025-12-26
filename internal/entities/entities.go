@@ -25,3 +25,13 @@ type CreateUserRequest struct {
 	Email       string  `db:"email" json:"email,omitempty"`
 	PhoneNumber *string `db:"phone_number" json:"phone_number,omitempty"`
 }
+
+type UpdateUserRequest struct {
+	Id          int64   `db:"id" json:"id,omitempty"`
+	Name        *string `db:"name" json:"name,omitempty"`
+	LastName    *string `db:"last_name" json:"last_name,omitempty"`
+	MiddleName  *string `db:"middle_name" json:"middle_name,omitempty"`
+	Nickname    *string `db:"nickname" json:"nickname,omitempty"`
+	Email       *string `db:"email" json:"email,omitempty"`
+	PhoneNumber *string `db:"phone_number" json:"phone_number,omitempty"`
+}

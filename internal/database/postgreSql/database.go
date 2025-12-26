@@ -11,8 +11,9 @@ import (
 
 type RWDBOperationer interface {
 	GetUserList(ctx context.Context, logger zerolog.Logger) (*entities.GetUserListResponse, error)
-	ApproveUser(ctx context.Context, logger zerolog.Logger, req *entities.CreateUserRequest) (*int64, error)
 	GetUserById(ctx context.Context, logger zerolog.Logger, userId int64) (*entities.User, error)
+	ApproveUser(ctx context.Context, logger zerolog.Logger, req *entities.CreateUserRequest) (*int64, error)
+	UpdateUser(ctx context.Context, logger zerolog.Logger, req *entities.UpdateUserRequest) (*int64, error)
 	DeleteUserById(ctx context.Context, logger zerolog.Logger, userId int64) error
 }
 type dbp struct {

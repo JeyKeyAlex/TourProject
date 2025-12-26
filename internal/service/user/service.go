@@ -14,9 +14,11 @@ import (
 
 type IService interface {
 	GetUserList(ctx context.Context) (*entities.GetUserListResponse, error)
+	GetUserById(ctx context.Context, userId int64) (*entities.User, error)
+
 	CreateUser(ctx context.Context, req *entities.CreateUserRequest) error
 	ApproveUser(ctx context.Context, email string) (*int64, error)
-	GetUserById(ctx context.Context, userId int64) (*entities.User, error)
+	UpdateUser(ctx context.Context, req *entities.UpdateUserRequest) (*int64, error)
 	DeleteUserById(ctx context.Context, userId int64) error
 
 	GetLogger() *zerolog.Logger

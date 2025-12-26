@@ -20,7 +20,6 @@ type RPCServer struct {
 	pb.UnimplementedUserServiceServer
 }
 
-// NewServer is a constructor for creating a new instance of a gRPC server(RPCServer structure).
 func NewServer(endpoints user.Endpoints, serverOptions []kitgrpc.ServerOption) pb.UserServiceServer {
 	return &RPCServer{
 		create:      kitgrpc.NewServer(endpoints.Create, common.DecodeRequest, common.EncodeResponse, serverOptions...),

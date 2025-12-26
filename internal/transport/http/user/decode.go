@@ -8,8 +8,6 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/JeyKeyAlex/TourProject/internal/entities"
-
 	pb "github.com/JeyKeyAlex/TestProject-genproto/user"
 )
 
@@ -18,7 +16,7 @@ func decodeEmptyRequest(_ context.Context, _ *http.Request) (interface{}, error)
 }
 
 func decodeCreateUserRequest(_ context.Context, r *http.Request) (interface{}, error) {
-	user := &entities.CreateUserRequest{}
+	user := &pb.CreateUserRequest{}
 
 	if err := json.NewDecoder(r.Body).Decode(user); err != nil {
 		return nil, err
@@ -27,8 +25,43 @@ func decodeCreateUserRequest(_ context.Context, r *http.Request) (interface{}, e
 	return user, nil
 }
 
-func decodeGetUserByIdRequest(_ context.Context, r *http.Request) (interface{}, error) {
-	req := pb.IdMessage{}
+func decodeApproveUserRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	req := &pb.ApproveUserRequest{}
+
+	email := chi.URLParam(r, "email")
+	if email == "" {
+		return nil, errors.New("missing email")
+	}
+
+	req.Email = email
+
+	return req, nil
+}
+
+func decodeUpdateUserRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	req := &pb.UpdateUserRequest{}
+
+	id := chi.URLParam(r, "id")
+	if id == "" {
+		return nil, errors.New("missing id")
+	}
+
+	userId, err := strconv.Atoi(id)
+	if err != nil {
+		return nil, errors.New("failed to parse user_id")
+	}
+
+	req.Id = int64(userId)
+
+	if err := json.NewDecoder(r.Body).Decode(req); err != nil {
+		return nil, err
+	}
+
+	return req, nil
+}
+
+func decodeDeleteUserByIdRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	req := &pb.IdMessage{}
 
 	id := chi.URLParam(r, "id")
 	if id == "" {
@@ -45,22 +78,20 @@ func decodeGetUserByIdRequest(_ context.Context, r *http.Request) (interface{}, 
 	return req, nil
 }
 
-func decodeApproveUserRequest(_ context.Context, r *http.Request) (interface{}, error) {
-	var email string
+func decodeGetUserByIdRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	req := &pb.IdMessage{}
 
-	if email = chi.URLParam(r, "email"); email == "" {
-		return nil, errors.New("missing email")
-	}
-
-	return email, nil
-}
-
-func decodeDeleteUserByIdRequest(_ context.Context, r *http.Request) (interface{}, error) {
-	var userId string
-
-	if userId = chi.URLParam(r, "id"); userId == "" {
+	id := chi.URLParam(r, "id")
+	if id == "" {
 		return nil, errors.New("missing user id")
 	}
 
-	return userId, nil
+	userId, err := strconv.ParseInt(id, 10, 64)
+	if err != nil {
+		return nil, errors.New("failed to parse user_id")
+	}
+
+	req.Id = userId
+
+	return req, nil
 }

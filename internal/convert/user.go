@@ -22,3 +22,17 @@ func GetUserEntityToEntry(eResp *entities.User) (*pb.User, error) {
 
 	return user, nil
 }
+
+func UpdateUserEntryToEntity(request *pb.UpdateUserRequest) (*entities.UpdateUserRequest, error) {
+	user := &entities.UpdateUserRequest{}
+
+	user.Id = request.Id
+	user.Name = request.Name
+	user.LastName = request.LastName
+	user.MiddleName = request.MiddleName
+	user.Nickname = request.Nickname
+	user.Email = request.Email
+	user.PhoneNumber = request.PhoneNumber
+
+	return user, nil
+}

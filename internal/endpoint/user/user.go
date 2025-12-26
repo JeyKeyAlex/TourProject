@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"github.com/JeyKeyAlex/TourProject/internal/convert"
-
 	userSrv "github.com/JeyKeyAlex/TourProject/internal/service/user"
 	"github.com/JeyKeyAlex/TourProject/internal/transport/http/middleware"
 	"github.com/JeyKeyAlex/TourProject/pkg/error_templates"
@@ -31,13 +30,41 @@ func makeGetUserList(s userSrv.IService) endpoint.Endpoint {
 	}
 }
 
+func makeGetUser(s userSrv.IService) endpoint.Endpoint {
+	return func(ctx context.Context, request interface{}) (interface{}, error) {
+		reqID, ctx := middleware.GetRequestID(ctx)
+		serviceLogger := s.GetLogger().With().Str("func", "makeGetUser").Str("request_id", reqID).Logger()
+		serviceLogger.Info().Msg("calling s.GetUser")
+
+		req, err := validate.CastValidateRequest[*pb.IdMessage](s.GetValidator(), request)
+		if err != nil {
+			serviceLogger.Error().Stack().Err(error_templates.ErrorDetailFromError(err)).Msg(pkgErr.FailedCastRequest)
+			return nil, err
+		}
+
+		user, err := s.GetUserById(ctx, req.Id)
+		if err != nil {
+			return nil, err
+		}
+
+		protoUser, err := convert.GetUserEntityToEntry(user)
+		if err != nil {
+			return nil, err
+		}
+
+		return &pb.GetUserResponse{
+			User: protoUser,
+		}, nil
+	}
+}
+
 func makeCreate(s userSrv.IService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		reqID, ctx := middleware.GetRequestID(ctx)
 		serviceLogger := s.GetLogger().With().Str("func", "makeCreate").Str("request_id", reqID).Logger()
 		serviceLogger.Info().Msg("calling s.createUser")
 
-		//req, err := validate.CastValidateRequest[*pb.CreateRequest](s.GetValidator(), request)
+		//req, err := validate.CastValidateRequest[*pb.CreateUserRequest](s.GetValidator(), request)
 		//if err != nil {
 		//	serviceLogger.Error().Stack().Err(error_templates.ErrorDetailFromError(err)).Msg(pkgErr.FailedCastRequest)
 		//	return nil, err
@@ -74,30 +101,30 @@ func makeApprove(s userSrv.IService) endpoint.Endpoint {
 	}
 }
 
-func makeGetUser(s userSrv.IService) endpoint.Endpoint {
+func makeUpdate(s userSrv.IService) endpoint.Endpoint {
 	return func(ctx context.Context, request interface{}) (interface{}, error) {
 		reqID, ctx := middleware.GetRequestID(ctx)
-		serviceLogger := s.GetLogger().With().Str("func", "makeGetUser").Str("request_id", reqID).Logger()
-		serviceLogger.Info().Msg("calling s.GetUser")
+		serviceLogger := s.GetLogger().With().Str("func", "makeUpdate").Str("request_id", reqID).Logger()
+		serviceLogger.Info().Msg("calling s.makeUpdate")
 
-		req, err := validate.CastValidateRequest[*pb.IdMessage](s.GetValidator(), request)
+		req, err := validate.CastValidateRequest[*pb.UpdateUserRequest](s.GetValidator(), request)
 		if err != nil {
 			serviceLogger.Error().Stack().Err(error_templates.ErrorDetailFromError(err)).Msg(pkgErr.FailedCastRequest)
 			return nil, err
 		}
 
-		user, err := s.GetUserById(ctx, req.Id)
+		eReq, err := convert.UpdateUserEntryToEntity(req)
 		if err != nil {
 			return nil, err
 		}
 
-		protoUser, err := convert.GetUserEntityToEntry(user)
+		id, err := s.UpdateUser(ctx, eReq)
 		if err != nil {
 			return nil, err
 		}
 
-		return &pb.GetUserResponse{
-			User: protoUser,
+		return &pb.IdMessage{
+			Id: *id,
 		}, nil
 	}
 }

@@ -8,6 +8,67 @@ import (
 	"github.com/rs/zerolog"
 )
 
+func (db *dbp) ApproveUser(ctx context.Context, logger zerolog.Logger, req *entities.CreateUserRequest) (*int64, error) {
+	timeout, cancel := context.WithTimeout(ctx, db.config.MaxIdleConnectionTimeout)
+	defer cancel()
+
+	var id int64
+
+	err := db.db.QueryRow(timeout, queryCreateUser,
+		req.Name,
+		req.LastName,
+		req.MiddleName,
+		req.Nickname,
+		req.Email,
+		req.PhoneNumber,
+	).Scan(&id)
+	if err != nil {
+		err = errors.New("failed to scan in Approve: " + err.Error())
+		logger.Error().Err(err).Msg("failed to Approve")
+		return nil, err
+	}
+
+	return &id, nil
+}
+
+func (db *dbp) UpdateUser(ctx context.Context, logger zerolog.Logger, req *entities.UpdateUserRequest) (*int64, error) {
+	timeout, cancel := context.WithTimeout(ctx, db.config.MaxIdleConnectionTimeout)
+	defer cancel()
+
+	var id int64
+
+	err := db.db.QueryRow(timeout, queryUpdate,
+		req.Name,
+		req.LastName,
+		req.MiddleName,
+		req.Nickname,
+		req.Email,
+		req.PhoneNumber,
+		req.Id,
+	).Scan(&id)
+	if err != nil {
+		err = errors.New("failed to scan in Update: " + err.Error())
+		logger.Error().Err(err).Msg("failed to Update")
+		return nil, err
+	}
+
+	return &id, nil
+}
+
+func (db *dbp) DeleteUserById(ctx context.Context, logger zerolog.Logger, userId int64) error {
+	timeout, cancel := context.WithTimeout(ctx, db.config.MaxIdleConnectionTimeout)
+	defer cancel()
+
+	_, err := db.db.Exec(timeout, queryDeleteUserById, userId)
+	if err != nil {
+		err = errors.New("failed to delete user: " + err.Error())
+		logger.Error().Err(err).Msg("failed to Delete")
+		return err
+	}
+
+	return nil
+}
+
 func (db *dbp) GetUserList(ctx context.Context, logger zerolog.Logger) (*entities.GetUserListResponse, error) {
 	timeout, cancel := context.WithTimeout(ctx, db.config.MaxIdleConnectionTimeout)
 	defer cancel()
@@ -57,29 +118,6 @@ func (db *dbp) GetUserList(ctx context.Context, logger zerolog.Logger) (*entitie
 	return resp, nil
 }
 
-func (db *dbp) ApproveUser(ctx context.Context, logger zerolog.Logger, req *entities.CreateUserRequest) (*int64, error) {
-	timeout, cancel := context.WithTimeout(ctx, db.config.MaxIdleConnectionTimeout)
-	defer cancel()
-
-	var id int64
-
-	err := db.db.QueryRow(timeout, queryCreateUser,
-		req.Name,
-		req.LastName,
-		req.MiddleName,
-		req.Nickname,
-		req.Email,
-		req.PhoneNumber,
-	).Scan(&id)
-	if err != nil {
-		err = errors.New("failed to scan in Approve: " + err.Error())
-		logger.Error().Err(err).Msg("failed to Approve")
-		return nil, err
-	}
-
-	return &id, nil
-}
-
 func (db *dbp) GetUserById(ctx context.Context, logger zerolog.Logger, userId int64) (*entities.User, error) {
 	timeout, cancel := context.WithTimeout(ctx, db.config.MaxIdleConnectionTimeout)
 	defer cancel()
@@ -103,18 +141,4 @@ func (db *dbp) GetUserById(ctx context.Context, logger zerolog.Logger, userId in
 	}
 
 	return &user, nil
-}
-
-func (db *dbp) DeleteUserById(ctx context.Context, logger zerolog.Logger, userId int64) error {
-	timeout, cancel := context.WithTimeout(ctx, db.config.MaxIdleConnectionTimeout)
-	defer cancel()
-
-	_, err := db.db.Exec(timeout, queryDeleteUserById, userId)
-	if err != nil {
-		err = errors.New("failed to delete user: " + err.Error())
-		logger.Error().Err(err).Msg("failed to Delete")
-		return err
-	}
-
-	return nil
 }
