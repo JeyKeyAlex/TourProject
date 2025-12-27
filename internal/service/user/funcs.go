@@ -14,6 +14,7 @@ func (s *Service) CreateUser(ctx context.Context, req *entities.CreateUserReques
 	if err != nil {
 		return err
 	}
+
 	return nil
 }
 
@@ -84,5 +85,6 @@ func (s *Service) GetUserList(ctx context.Context) (*entities.GetUserListRespons
 	if err != nil {
 		return nil, err
 	}
+
 	return list, nil
 }

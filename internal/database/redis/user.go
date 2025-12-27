@@ -66,16 +66,22 @@ func (r *redisP) GetTempUser(ctx context.Context, logger zerolog.Logger, email s
 	user.Name = userMap["name"]
 	user.LastName = userMap["last_name"]
 
-	middleName := userMap["middle_name"]
-	user.MiddleName = &middleName
+	if userMap["middle_name"] != "" {
+		middleName := userMap["middle_name"]
+		user.MiddleName = &middleName
+	}
 
-	nick := userMap["nickname"]
-	user.Nickname = &nick
+	if userMap["nickname"] != "" {
+		nick := userMap["nickname"]
+		user.Nickname = &nick
+	}
 
 	user.Email = userMap["email"]
 
-	phone := userMap["phone_number"]
-	user.PhoneNumber = &phone
+	if userMap["phone_number"] != "" {
+		phone := userMap["phone_number"]
+		user.PhoneNumber = &phone
+	}
 
 	return &user, nil
 }

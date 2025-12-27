@@ -16,13 +16,13 @@ func decodeEmptyRequest(_ context.Context, _ *http.Request) (interface{}, error)
 }
 
 func decodeCreateUserRequest(_ context.Context, r *http.Request) (interface{}, error) {
-	user := &pb.CreateUserRequest{}
+	req := &pb.CreateUserRequest{}
 
-	if err := json.NewDecoder(r.Body).Decode(user); err != nil {
+	if err := json.NewDecoder(r.Body).Decode(req); err != nil {
 		return nil, err
 	}
 
-	return user, nil
+	return req, nil
 }
 
 func decodeApproveUserRequest(_ context.Context, r *http.Request) (interface{}, error) {

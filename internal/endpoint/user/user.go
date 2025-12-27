@@ -2,13 +2,13 @@ package user
 
 import (
 	"context"
-	"errors"
 	"github.com/JeyKeyAlex/TourProject/internal/convert"
 	userSrv "github.com/JeyKeyAlex/TourProject/internal/service/user"
 	"github.com/JeyKeyAlex/TourProject/internal/transport/http/middleware"
 	"github.com/JeyKeyAlex/TourProject/pkg/error_templates"
 	pkgErr "github.com/JeyKeyAlex/TourProject/pkg/errors"
 	"github.com/JeyKeyAlex/TourProject/pkg/helpers/validate"
+	"google.golang.org/protobuf/types/known/emptypb"
 
 	"github.com/go-kit/kit/endpoint"
 
@@ -26,7 +26,15 @@ func makeGetUserList(s userSrv.IService) endpoint.Endpoint {
 			return nil, err
 		}
 
-		return &resp, nil
+		protoUsers, err := convert.GetUserListEntityToEntry(resp)
+		if err != nil {
+			return nil, err
+		}
+
+		return &pb.GetUserListResponse{
+			Count: resp.Count,
+			Users: protoUsers,
+		}, nil
 	}
 }
 
@@ -64,18 +72,23 @@ func makeCreate(s userSrv.IService) endpoint.Endpoint {
 		serviceLogger := s.GetLogger().With().Str("func", "makeCreate").Str("request_id", reqID).Logger()
 		serviceLogger.Info().Msg("calling s.createUser")
 
-		//req, err := validate.CastValidateRequest[*pb.CreateUserRequest](s.GetValidator(), request)
-		//if err != nil {
-		//	serviceLogger.Error().Stack().Err(error_templates.ErrorDetailFromError(err)).Msg(pkgErr.FailedCastRequest)
-		//	return nil, err
-		//}
-		//
-		//err = s.CreateUser(ctx, req)
-		//if err != nil {
-		//	return nil, err
-		//}
+		req, err := validate.CastValidateRequest[*pb.CreateUserRequest](s.GetValidator(), request)
+		if err != nil {
+			serviceLogger.Error().Stack().Err(error_templates.ErrorDetailFromError(err)).Msg(pkgErr.FailedCastRequest)
+			return nil, err
+		}
 
-		return nil, nil
+		eReq, err := convert.CreateUserEntryToEntity(req)
+		if err != nil {
+			return nil, err
+		}
+
+		err = s.CreateUser(ctx, eReq)
+		if err != nil {
+			return nil, err
+		}
+
+		return &emptypb.Empty{}, nil
 	}
 }
 
@@ -85,19 +98,20 @@ func makeApprove(s userSrv.IService) endpoint.Endpoint {
 		serviceLogger := s.GetLogger().With().Str("func", "makeApprove").Str("request_id", reqID).Logger()
 		serviceLogger.Info().Msg("calling s.makeApprove")
 
-		email, ok := request.(string)
-		if !ok {
-			err := errors.New("email must be a string")
+		req, err := validate.CastValidateRequest[*pb.ApproveUserRequest](s.GetValidator(), request)
+		if err != nil {
 			serviceLogger.Error().Stack().Err(error_templates.ErrorDetailFromError(err)).Msg(pkgErr.FailedCastRequest)
 			return nil, err
 		}
 
-		id, err := s.ApproveUser(ctx, email)
+		id, err := s.ApproveUser(ctx, req.Email)
 		if err != nil {
 			return nil, err
 		}
 
-		return &id, nil
+		return &pb.IdMessage{
+			Id: *id,
+		}, nil
 	}
 }
 
@@ -146,6 +160,6 @@ func makeDelete(s userSrv.IService) endpoint.Endpoint {
 			return nil, err
 		}
 
-		return nil, nil
+		return &emptypb.Empty{}, nil
 	}
 }
