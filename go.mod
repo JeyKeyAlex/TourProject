@@ -4,7 +4,7 @@ go 1.24.4
 
 require (
 	buf.build/go/protovalidate v1.1.0
-	github.com/JeyKeyAlex/TestProject-genproto v1.0.8
+	github.com/JeyKeyAlex/TestProject-genproto v1.0.9
 	github.com/go-chi/chi/v5 v5.2.3
 	github.com/go-kit/kit v0.13.0
 	github.com/google/uuid v1.6.0
