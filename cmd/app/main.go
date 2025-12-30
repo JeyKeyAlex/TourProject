@@ -91,7 +91,13 @@ func main() {
 	redisDB, err := redis.New(rds)
 
 	validator, err := protovalidate.New()
-	serviceEndpoints := initEndpoints(rwDb, redisDB, validator, &netLogger, appConfig)
+
+	rbConn, err := initGRPCClientConnection(appConfig.ClientsGRPC.TestMessenger)
+	if err != nil {
+		coreLogger.Fatal().Err(err).Msg("failed to initialize connection of test-messenger client")
+	}
+
+	serviceEndpoints := initEndpoints(rwDb, redisDB, validator, &netLogger, appConfig, rbConn)
 
 	// TODO init client (grpc, http, smtp,...)
 	// TODO init messenger broker (Kafka, Rabbit, Nats)

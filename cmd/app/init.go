@@ -3,7 +3,10 @@ package main
 import (
 	"buf.build/go/protovalidate"
 	"context"
+	"crypto/tls"
 	"github.com/rs/zerolog"
+	"google.golang.org/grpc/credentials"
+	"google.golang.org/grpc/credentials/insecure"
 	"net"
 	"net/http"
 	"runtime"
@@ -69,8 +72,9 @@ func initEndpoints(
 	validator protovalidate.Validator,
 	logger *zerolog.Logger,
 	appConfig *config.Configuration,
+	conn *googlegrpc.ClientConn,
 ) endpoint.ServiceEndpoints {
-	userSrv := srvUser.NewService(rwdbOperationer, redisDB, validator, logger, appConfig)
+	userSrv := srvUser.NewService(rwdbOperationer, redisDB, validator, logger, appConfig, conn)
 	return endpoint.ServiceEndpoints{
 		UserEP: userEp.MakeEndpoints(userSrv),
 	}
@@ -157,4 +161,32 @@ func initRedisConnection(appConfig *config.Configuration) (*goRedis.Client, erro
 	}
 
 	return rds, nil
+}
+
+func initGRPCClientConnection(clientInfo config.ClientGRPC) (*googlegrpc.ClientConn, error) {
+	timeout := googlegrpc.WithIdleTimeout(clientInfo.IdleTimeout)
+
+	var transportCredentials googlegrpc.DialOption
+	if clientInfo.InsecureSkipVerify {
+		transportCredentials = googlegrpc.WithTransportCredentials(credentials.NewTLS(&tls.Config{
+			InsecureSkipVerify: true,
+		}))
+	} else {
+		transportCredentials = googlegrpc.WithTransportCredentials(insecure.NewCredentials())
+	}
+
+	var opts []googlegrpc.DialOption
+	opts = append(opts, timeout, transportCredentials, googlegrpc.WithDefaultCallOptions(
+		googlegrpc.MaxCallSendMsgSize(clientInfo.MaxRequestBodySize),
+		googlegrpc.MaxCallRecvMsgSize(clientInfo.MaxResponseBodySize),
+	))
+
+	conn, err := googlegrpc.NewClient(
+		clientInfo.GetFullAddress(),
+		opts...)
+	if err != nil {
+		return nil, err
+	}
+
+	return conn, nil
 }

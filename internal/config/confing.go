@@ -42,17 +42,18 @@ func NewConfig() (*Configuration, error) {
 
 type (
 	Configuration struct {
-		Version  VersionConfig  `env:",prefix=VERSION_"`
-		Log      LogConfig      `env:",prefix=LOG_"`
-		RunTime  RuntimeConfig  `env:",prefix=RUNTIME_"`
-		HTTP     HTTPConfig     `env:",prefix=HTTP_"`
-		GRPC     GRPCConfig     `env:",prefix=GRPC_"`
-		RWDB     DBConfig       `env:",prefix=RWDB_"`
-		RDB      DBConfig       `env:",prefix=RDB_"`
-		Redis    RedisConfig    `env:",prefix=REDIS_"`
-		LifeTime LifeTimeConfig `env:",prefix=LIFE_TIME_"`
-		ApiKey   ApiKeyConfig   `env:",prefix=API_KEY_"`
-		Role     RoleConfig     `env:",prefix=ROLE_"`
+		Version     VersionConfig  `env:",prefix=VERSION_"`
+		Log         LogConfig      `env:",prefix=LOG_"`
+		RunTime     RuntimeConfig  `env:",prefix=RUNTIME_"`
+		HTTP        HTTPConfig     `env:",prefix=HTTP_"`
+		GRPC        GRPCConfig     `env:",prefix=GRPC_"`
+		ClientsGRPC ClientsGRPC    `env:",prefix=CLIENTS_GRPC_"`
+		RWDB        DBConfig       `env:",prefix=RWDB_"`
+		RDB         DBConfig       `env:",prefix=RDB_"`
+		Redis       RedisConfig    `env:",prefix=REDIS_"`
+		LifeTime    LifeTimeConfig `env:",prefix=LIFE_TIME_"`
+		ApiKey      ApiKeyConfig   `env:",prefix=API_KEY_"`
+		Role        RoleConfig     `env:",prefix=ROLE_"`
 	}
 
 	VersionConfig struct {
@@ -90,6 +91,19 @@ type (
 		Address                    string        `env:"ADDRESS,default=:18080"`
 	}
 
+	ClientsGRPC struct {
+		TestMessenger ClientGRPC `env:",prefix=TEST_MESSENGER_"`
+	}
+
+	ClientGRPC struct {
+		Address             string        `env:"ADDRESS"`
+		Port                string        `env:"PORT"`
+		IdleTimeout         time.Duration `env:"IDLE_TIMEOUT"`
+		InsecureSkipVerify  bool          `env:"INSECURE_SKIP_VERIFY"`
+		MaxRequestBodySize  int           `env:"MAX_REQUEST_BODY_SIZE,default=4194304"`
+		MaxResponseBodySize int           `env:"MAX_RESPONSE_BODY_SIZE,default=4194304"`
+	}
+
 	DBConfig struct {
 		ConnectionString         string        `env:"CONNECTION_STRING,required"`
 		MaxOpenConnection        int32         `env:"MAX_OPEN_CONNECTION,default=25"`
@@ -125,3 +139,7 @@ type (
 		Superuser string `env:"SUPERUSER,default=superuser"`
 	}
 )
+
+func (c ClientGRPC) GetFullAddress() string {
+	return c.Address + c.Port
+}

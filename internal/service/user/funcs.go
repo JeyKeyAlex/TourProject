@@ -2,9 +2,13 @@ package user
 
 import (
 	"context"
+	"errors"
+	"fmt"
 
 	"github.com/JeyKeyAlex/TourProject/internal/entities"
 	"github.com/JeyKeyAlex/TourProject/pkg/helpers/saga"
+
+	pbMessenger "github.com/JeyKeyAlex/TestProject-genproto/messenger"
 )
 
 func (s *Service) CreateUser(ctx context.Context, req *entities.CreateUserRequest) error {
@@ -74,6 +78,13 @@ func (s *Service) GetUserById(ctx context.Context, userId int64) (*entities.User
 	if err != nil {
 		return nil, err
 	}
+
+	message, err := s.messengerClient.Create(ctx, &pbMessenger.CreateMessageRequest{Email: user.Email})
+	if err != nil {
+		err := errors.New("failed to create message")
+		return nil, err
+	}
+	fmt.Println(message)
 
 	return user, nil
 }

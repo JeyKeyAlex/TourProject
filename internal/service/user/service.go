@@ -2,6 +2,7 @@ package user
 
 import (
 	"context"
+	googlegrpc "google.golang.org/grpc"
 
 	"github.com/JeyKeyAlex/TourProject/internal/config"
 	"github.com/JeyKeyAlex/TourProject/internal/database/postgreSql"
@@ -10,6 +11,8 @@ import (
 
 	"buf.build/go/protovalidate"
 	"github.com/rs/zerolog"
+
+	pbMessenger "github.com/JeyKeyAlex/TestProject-genproto/messenger"
 )
 
 type IService interface {
@@ -25,11 +28,12 @@ type IService interface {
 	GetValidator() protovalidate.Validator
 }
 type Service struct {
-	rwdbOperation postgreSql.RWDBOperationer
-	redisDB       redis.Redis
-	logger        *zerolog.Logger
-	appConfig     *config.Configuration
-	validator     protovalidate.Validator
+	rwdbOperation   postgreSql.RWDBOperationer
+	redisDB         redis.Redis
+	logger          *zerolog.Logger
+	appConfig       *config.Configuration
+	validator       protovalidate.Validator
+	messengerClient pbMessenger.MessengerServiceClient
 }
 
 func (s *Service) GetLogger() *zerolog.Logger {
@@ -39,12 +43,13 @@ func (s *Service) GetValidator() protovalidate.Validator {
 	return s.validator
 }
 
-func NewService(rwdbOperation postgreSql.RWDBOperationer, redisDB redis.Redis, validator protovalidate.Validator, logger *zerolog.Logger, appConfig *config.Configuration) IService {
+func NewService(rwdbOperation postgreSql.RWDBOperationer, redisDB redis.Redis, validator protovalidate.Validator, logger *zerolog.Logger, appConfig *config.Configuration, conn *googlegrpc.ClientConn) IService {
 	return &Service{
-		rwdbOperation: rwdbOperation,
-		redisDB:       redisDB,
-		logger:        logger,
-		appConfig:     appConfig,
-		validator:     validator,
+		rwdbOperation:   rwdbOperation,
+		redisDB:         redisDB,
+		logger:          logger,
+		appConfig:       appConfig,
+		validator:       validator,
+		messengerClient: pbMessenger.NewMessengerServiceClient(conn),
 	}
 }
