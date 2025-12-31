@@ -92,14 +92,19 @@ func main() {
 
 	validator, err := protovalidate.New()
 
-	rbConn, err := initGRPCClientConnection(appConfig.ClientsGRPC.TestMessenger)
+	//rabbitConn, err := initRabbitProducer(context.Background(), &appConfig.Queues, &coreLogger)
+	//if err != nil {
+	//	coreLogger.Fatal().Err(err).Msg("error initializing rabbit")
+	//}
+	//coreLogger.Info().Msg("successful connection to Rabbit")
+
+	messengerConn, err := initGRPCClientConnection(appConfig.ClientsGRPC.TestMessenger)
 	if err != nil {
 		coreLogger.Fatal().Err(err).Msg("failed to initialize connection of test-messenger client")
 	}
 
-	serviceEndpoints := initEndpoints(rwDb, redisDB, validator, &netLogger, appConfig, rbConn)
+	serviceEndpoints := initEndpoints(rwDb, redisDB, validator, &netLogger, appConfig, messengerConn)
 
-	// TODO init client (grpc, http, smtp,...)
 	// TODO init messenger broker (Kafka, Rabbit, Nats)
 
 	chiRouter := initHTTPRouter()

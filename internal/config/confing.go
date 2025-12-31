@@ -51,6 +51,7 @@ type (
 		RWDB        DBConfig       `env:",prefix=RWDB_"`
 		RDB         DBConfig       `env:",prefix=RDB_"`
 		Redis       RedisConfig    `env:",prefix=REDIS_"`
+		Queues      QueuesConfig   `env:",prefix=QUEUES_"`
 		LifeTime    LifeTimeConfig `env:",prefix=LIFE_TIME_"`
 		ApiKey      ApiKeyConfig   `env:",prefix=API_KEY_"`
 		Role        RoleConfig     `env:",prefix=ROLE_"`
@@ -137,6 +138,11 @@ type (
 		Organizer string `env:"ORGANIZER,default=organizer"`
 		Moderator string `env:"MODERATOR,default=moderator"`
 		Superuser string `env:"SUPERUSER,default=superuser"`
+	}
+
+	QueuesConfig struct {
+		URI           string `env:"URI,required"`
+		PrefetchCount int    `env:"PREFETCH_COUNT" default:"0"`
 	}
 )
 

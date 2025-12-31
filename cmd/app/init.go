@@ -190,3 +190,14 @@ func initGRPCClientConnection(clientInfo config.ClientGRPC) (*googlegrpc.ClientC
 
 	return conn, nil
 }
+
+//func initRabbitProducer(ctx context.Context, cfg *config.QueuesConfig, logger *zerolog.Logger) (*producer.Producer, error) {
+//	logger.Info().Msg("initializing rabbit connection for producer")
+//
+//	prd, err := producer.New(ctx, cfg, logger)
+//	if err != nil {
+//		return nil, err
+//	}
+//
+//	return prd, nil
+//}
